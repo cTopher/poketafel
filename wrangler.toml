@@ -1,0 +1,6 @@
+name = "poketafel"
+compatibility_date = "2025-04-01"
+
+[vars]
+# Set in Cloudflare dashboard or .dev.vars for local:
+# DATABASE_URL = "postgres://..."

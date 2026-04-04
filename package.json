@@ -1,0 +1,17 @@
+{
+  "name": "poketafel",
+  "private": true,
+  "workspaces": ["shared", "app", "functions"],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:app\" \"npm run dev:functions\"",
+    "dev:app": "npm run dev --workspace=app",
+    "dev:functions": "wrangler pages dev app/dist --port 8788",
+    "build": "npm run build --workspace=app",
+    "typecheck": "tsc --noEmit --project app/tsconfig.json && tsc --noEmit --project functions/tsconfig.json"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "wrangler": "^4.14.0",
+    "typescript": "^5.8.3"
+  }
+}
