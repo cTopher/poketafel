@@ -25,8 +25,8 @@ export async function checkEvolution(pokeapiId: number, newLevel: number): Promi
     return { shouldEvolve: false, evolvesToId: null, evolvesToName: null };
   }
 
-  const nextStage = chain[currentIdx + 1];
-  if (nextStage.minLevel !== null && newLevel >= nextStage.minLevel) {
+  const nextStage = chain[currentIdx + 1]!;
+  if (nextStage && nextStage.minLevel !== null && newLevel >= nextStage.minLevel) {
     return {
       shouldEvolve: true,
       evolvesToId: nextStage.speciesId,
