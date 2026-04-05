@@ -106,7 +106,8 @@ function BattleActive({
     setTimeout(() => setSpriteAnims({ wild: "idle", player: "idle" }), 400);
 
     if (result.status !== "active") {
-      setTimeout(() => finishBattle(result.status), 800);
+      const outcome = result.status as "won" | "lost" | "caught";
+      setTimeout(() => finishBattle(outcome), 800);
     }
   }
 
