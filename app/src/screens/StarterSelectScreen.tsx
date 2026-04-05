@@ -83,7 +83,7 @@ export function StarterSelectScreen({ onSelect }: StarterSelectScreenProps) {
               style={{
                 fontSize: "0.45em",
                 fontFamily: "'Press Start 2P'",
-                color: typeColors[starter.types[0]] ?? "var(--gba-text)",
+                color: (starter.types[0] ? typeColors[starter.types[0]] : undefined) ?? "var(--gba-text)",
                 textTransform: "uppercase",
               }}
             >

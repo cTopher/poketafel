@@ -50,7 +50,7 @@ export function applyScoreDelta(map: DifficultyMap, factorA: number, factorB: nu
 export function pickWeightedQuestion(map: DifficultyMap, retryQueue: Question[]): Question {
   // Retry queue takes priority
   if (retryQueue.length > 0) {
-    return retryQueue[0];
+    return retryQueue[0]!;
   }
 
   // Weighted random selection
@@ -61,8 +61,8 @@ export function pickWeightedQuestion(map: DifficultyMap, retryQueue: Question[])
   for (const [k, score] of entries) {
     roll -= score;
     if (roll <= 0) {
-      const [a, b] = k.split("x").map(Number);
-      return { factorA: a, factorB: b };
+      const parts = k.split("x").map(Number);
+      return { factorA: parts[0]!, factorB: parts[1]! };
     }
   }
 
