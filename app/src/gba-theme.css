@@ -1,0 +1,59 @@
+:root {
+  --gba-bg: #1a1c2c;
+  --gba-dark: #262b44;
+  --gba-panel: #3a4466;
+  --gba-border: #5a6988;
+  --gba-text: #f4f4f4;
+  --gba-text-shadow: #262b44;
+  --gba-gold: #ffcd75;
+  --gba-red: #e83b3b;
+  --gba-green: #38b764;
+  --gba-blue: #3b5dc9;
+  --gba-yellow: #f7ec6e;
+  --gba-orange: #f77622;
+  --gba-purple: #b55088;
+  --gba-cyan: #41a6f6;
+  --gba-white: #ffffff;
+  --gba-hp-green: #38b764;
+  --gba-hp-yellow: #f7ec6e;
+  --gba-hp-red: #e83b3b;
+  --gba-grass: #63c74d;
+  --gba-sky: #73bef3;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body, #root {
+  width: 100%; height: 100%; overflow: hidden;
+  background: #000;
+  font-family: "Press Start 2P", monospace;
+  color: var(--gba-text);
+  -webkit-font-smoothing: none;
+  image-rendering: pixelated;
+}
+
+body { position: fixed; inset: 0; }
+#root { display: flex; align-items: center; justify-content: center; }
+
+.gba-border { border: 3px solid var(--gba-border); outline: 3px solid var(--gba-dark); border-radius: 8px; }
+.gba-panel { background: var(--gba-panel); border: 3px solid var(--gba-border); border-radius: 8px; padding: 12px; }
+
+.gba-button {
+  font-family: "Press Start 2P", monospace; font-size: 0.7em;
+  background: var(--gba-blue); color: var(--gba-white);
+  border: 3px solid var(--gba-border); border-radius: 6px;
+  padding: 10px 20px; cursor: pointer;
+  text-shadow: 1px 1px 0 var(--gba-text-shadow); transition: background 0.1s;
+}
+.gba-button:hover { background: var(--gba-cyan); }
+.gba-button:active { transform: scale(0.96); }
+
+.gba-input {
+  font-family: "Press Start 2P", monospace; font-size: 0.8em;
+  background: var(--gba-dark); color: var(--gba-gold);
+  border: 3px solid var(--gba-border); border-radius: 6px;
+  padding: 8px 12px; outline: none; width: 100%;
+}
+.gba-input:focus { border-color: var(--gba-cyan); }
+
+@keyframes blink-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
