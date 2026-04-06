@@ -235,7 +235,7 @@ function BattleActive({
           <PokemonSprite
             src={wildInfo.spriteFront}
             alt={wildPokemon.name}
-            size={170}
+            size={10.625}
             animation={spriteAnims.wild}
           />
         </div>
@@ -256,7 +256,7 @@ function BattleActive({
           <PokemonSprite
             src={playerPokemonInfo.spriteBack}
             alt={playerPokemon.nickname ?? playerPokemonInfo.name}
-            size={190}
+            size={11.875}
             animation={spriteAnims.player}
           />
         </div>

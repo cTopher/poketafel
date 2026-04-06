@@ -7,13 +7,13 @@
 }
 
 .platePlayer {
-  min-width: 220px;
+  min-width: 14em;
   border-radius: 8px 0 0 8px;
   border-right: none;
 }
 
 .plateEnemy {
-  min-width: 190px;
+  min-width: 12em;
   border-radius: 0 8px 8px 0;
   border-left: none;
 }
@@ -37,11 +37,11 @@
 }
 
 .namePlayer {
-  max-width: 120px;
+  max-width: 7.5em;
 }
 
 .nameEnemy {
-  max-width: 110px;
+  max-width: 7em;
 }
 
 .level {

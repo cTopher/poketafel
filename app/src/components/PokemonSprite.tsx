@@ -4,6 +4,7 @@ import styles from "./PokemonSprite.module.css";
 interface PokemonSpriteProps {
   src: string;
   alt: string;
+  /** Size in em units (scales with container font-size) */
   size?: number;
   animation?: "idle" | "attack" | "damage" | "faint" | "entrance" | "none";
 }
@@ -18,7 +19,7 @@ const animationClassMap: Record<string, string | undefined> = {
 export function PokemonSprite({
   src,
   alt,
-  size = 128,
+  size = 8,
   animation = "idle",
 }: PokemonSpriteProps) {
   const [shaking] = useState(false);
@@ -32,7 +33,7 @@ export function PokemonSprite({
       src={src}
       alt={alt}
       className={`${styles.sprite} ${animClass}`}
-      style={{ width: size, height: size }}
+      style={{ width: `${size}em`, height: `${size}em` }}
     />
   );
 }

@@ -28,7 +28,9 @@
 
 .starterGrid {
   display: flex;
-  gap: 28px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.75em;
 }
 
 .starterCard {
@@ -53,8 +55,8 @@
 }
 
 .starterSprite {
-  width: 96px;
-  height: 96px;
+  width: 6em;
+  height: 6em;
   image-rendering: pixelated;
 }
 

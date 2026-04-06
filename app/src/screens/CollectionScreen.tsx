@@ -71,7 +71,7 @@ export function CollectionScreen({
                 <PokemonSprite
                   src={info.spriteFront}
                   alt={info.name}
-                  size={64}
+                  size={4}
                   animation="none"
                 />
               )}

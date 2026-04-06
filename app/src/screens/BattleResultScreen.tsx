@@ -50,13 +50,13 @@ export function BattleResultScreen({
         <PokemonSprite
           src={caughtPokemonInfo.spriteFront}
           alt={caughtPokemonInfo.name}
-          size={96}
+          size={6}
         />
       ) : (
         <PokemonSprite
           src={playerPokemonInfo.spriteFront}
           alt={playerPokemonInfo.name}
-          size={96}
+          size={6}
         />
       )}
 

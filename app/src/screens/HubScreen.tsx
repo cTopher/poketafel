@@ -35,7 +35,7 @@ export function HubScreen({
           <PokemonSprite
             src={pokemonInfo.spriteFront}
             alt={pokemonInfo.name}
-            size={96}
+            size={6}
           />
           <span className={styles.pokemonLabel}>
             {pokemonInfo.name} Lv.{activePokemon.level}
