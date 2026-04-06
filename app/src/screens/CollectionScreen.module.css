@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%);
+  background: var(--gba-screen-bg);
   padding: 24px;
   gap: 16px;
 }
@@ -15,8 +15,8 @@
 
 .headerTitle {
   font-size: 0.8em;
-  color: #f8d030;
-  text-shadow: 2px 2px 0 #504000;
+  color: #383838;
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.3);
 }
 
 .backButton {
@@ -37,35 +37,36 @@
   align-items: center;
   gap: 4px;
   padding: 8px;
-  background: rgba(240, 240, 232, 0.04);
-  border: 2px solid #585858;
+  background: var(--gba-panel);
+  border: 2px solid var(--gba-border);
   border-radius: 8px;
   cursor: pointer;
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
 }
 
 .pokemonCardSelected {
-  background: rgba(240, 240, 232, 0.1);
+  background: #e8e0c0;
 }
 
 .pokemonCardActive {
-  background: rgba(248, 208, 48, 0.2);
   border-color: #f8d030;
+  box-shadow: 0 0 0 2px #f8d030;
 }
 
 .pokemonName {
   font-size: 0.35em;
   text-transform: uppercase;
-  color: #f0f0e8;
+  color: #383838;
 }
 
 .pokemonLevel {
   font-size: 0.3em;
-  color: #a0d8a0;
+  color: #585858;
 }
 
 .activeLabel {
   font-size: 0.25em;
-  color: #f8d030;
+  color: #c08800;
 }
 
 .setActiveArea {

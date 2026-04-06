@@ -5,7 +5,7 @@
   justify-content: center;
   height: 100%;
   gap: 20px;
-  background: linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%);
+  background: var(--gba-screen-bg);
   padding: 32px;
 }
 
@@ -17,7 +17,7 @@
 
 .trainerName {
   font-size: 0.5em;
-  color: #a0d8a0;
+  color: #383838;
 }
 
 .pokemonPreview {
@@ -30,7 +30,7 @@
 .pokemonLabel {
   font-size: 0.5em;
   text-transform: uppercase;
-  color: #f0f0e8;
+  color: #383838;
 }
 
 .buttonGroup {
@@ -44,8 +44,9 @@
   width: 100%;
   font-size: 0.65em;
   padding: 14px 20px;
-  background: #e84040;
-  border: 3px solid #b83030;
+  background: var(--gba-panel);
+  border: 3px solid var(--gba-border);
+  color: #c03028;
 }
 
 .collectionButton {

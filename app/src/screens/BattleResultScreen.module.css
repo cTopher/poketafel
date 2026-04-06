@@ -5,13 +5,13 @@
   justify-content: center;
   height: 100%;
   gap: 20px;
-  background: linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%);
+  background: var(--gba-screen-bg);
   padding: 40px;
 }
 
 .outcomeTitle {
   font-size: 1.5em;
-  text-shadow: 2px 2px 0 #103010;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
 }
 
 .resultBox {
@@ -34,19 +34,19 @@
 }
 
 .caught {
-  color: #68a848;
+  color: #38783c;
 }
 
 .outcomeWon {
-  color: #68a848;
+  color: #38783c;
 }
 
 .outcomeCaught {
-  color: #f8d030;
+  color: #c08800;
 }
 
 .outcomeLost {
-  color: #e84040;
+  color: #c03028;
 }
 
 .continueButton {
