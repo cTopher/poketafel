@@ -201,6 +201,8 @@ function BattleActive({
             currentHp={battle.playerHp}
             maxHp={battle.playerMaxHp}
             side="player"
+            xp={playerPokemon.xp}
+            xpToNext={xpToNextLevel(playerPokemon.level)}
           />
         </div>
 

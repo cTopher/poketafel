@@ -1,13 +1,13 @@
 .plate {
-  background: linear-gradient(180deg, #f0f0e0 0%, #c8c8b8 100%);
-  border: 3px solid #585858;
-  padding: 6px 12px 8px;
-  box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.25);
+  background: linear-gradient(180deg, #f0e8c8 0%, #d8d0b0 100%);
+  border: 3px solid #484848;
+  padding: 6px 12px 6px;
+  box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.2);
   position: relative;
 }
 
 .platePlayer {
-  min-width: 210px;
+  min-width: 220px;
   border-radius: 8px 0 0 8px;
   border-right: none;
 }
@@ -22,7 +22,7 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   gap: 10px;
 }
 
@@ -47,7 +47,7 @@
 .level {
   font-size: 0.45em;
   font-family: "Press Start 2P", monospace;
-  color: #585858;
+  color: #383838;
   white-space: nowrap;
 }
 
@@ -55,4 +55,36 @@
   display: flex;
   align-items: center;
   gap: 0;
+}
+
+.xpBarWrapper {
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.xpLabel {
+  font-size: 0.25em;
+  font-weight: bold;
+  color: #f8f8f0;
+  background: #4888c8;
+  padding: 1px 3px;
+  border-radius: 2px;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.xpTrack {
+  flex: 1;
+  height: 2px;
+  background: #484848;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.xpFill {
+  height: 100%;
+  background: #58a8d8;
+  transition: width 0.5s ease-out;
 }

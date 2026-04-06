@@ -7,9 +7,11 @@ interface NamePlateProps {
   currentHp: number;
   maxHp: number;
   side: "enemy" | "player";
+  xp?: number;
+  xpToNext?: number;
 }
 
-export function NamePlate({ name, level, currentHp, maxHp, side }: NamePlateProps) {
+export function NamePlate({ name, level, currentHp, maxHp, side, xp, xpToNext }: NamePlateProps) {
   const isPlayer = side === "player";
 
   return (
@@ -29,6 +31,18 @@ export function NamePlate({ name, level, currentHp, maxHp, side }: NamePlateProp
           showNumbers={isPlayer}
         />
       </div>
+
+      {isPlayer && xp !== undefined && xpToNext !== undefined && (
+        <div className={styles.xpBarWrapper}>
+          <span className={styles.xpLabel}>EXP</span>
+          <div className={styles.xpTrack}>
+            <div
+              className={styles.xpFill}
+              style={{ width: `${Math.min(100, (xp / xpToNext) * 100)}%` }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
