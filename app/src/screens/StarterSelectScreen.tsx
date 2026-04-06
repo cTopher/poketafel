@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { TextBox } from "../components/TextBox";
 import { getPokemon, STARTER_IDS, type PokemonBasicInfo } from "../lib/pokeapi";
 
 interface StarterSelectScreenProps {
@@ -23,17 +22,21 @@ export function StarterSelectScreen({ onSelect }: StarterSelectScreenProps) {
 
   if (starters.length === 0) {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: "0.7em", color: "var(--gba-gold)" }}>
-        LOADING POKeMON...
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        height: "100%", fontSize: "0.7em", color: "#f8d030",
+        background: "linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%)",
+      }}>
+        LOADING POKéMON...
       </div>
     );
   }
 
   const typeColors: Record<string, string> = {
-    grass: "#63c74d",
-    fire: "#e83b3b",
-    water: "#3b5dc9",
-    poison: "#b55088",
+    grass: "#68a848",
+    fire: "#e84040",
+    water: "#4888c8",
+    poison: "#a848a8",
     normal: "#a0a0a0",
   };
 
@@ -46,14 +49,14 @@ export function StarterSelectScreen({ onSelect }: StarterSelectScreenProps) {
         justifyContent: "center",
         height: "100%",
         gap: 24,
-        background: "linear-gradient(180deg, #2a4858 0%, #1a3040 50%, #1a1c2c 100%)",
+        background: "linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%)",
       }}
     >
-      <TextBox>
-        <p style={{ textAlign: "center" }}>Choose your partner POKeMON!</p>
-      </TextBox>
+      <div className="emerald-textbox" style={{ padding: "10px 20px" }}>
+        <p style={{ textAlign: "center" }}>Choose your partner POKéMON!</p>
+      </div>
 
-      <div style={{ display: "flex", gap: 32 }}>
+      <div style={{ display: "flex", gap: 28 }}>
         {starters.map((starter) => (
           <button
             key={starter.id}
@@ -63,10 +66,14 @@ export function StarterSelectScreen({ onSelect }: StarterSelectScreenProps) {
               flexDirection: "column",
               alignItems: "center",
               gap: 8,
-              padding: 16,
-              background: selected === starter.id ? "rgba(255,205,117,0.2)" : "rgba(255,255,255,0.05)",
-              border: selected === starter.id ? "3px solid var(--gba-gold)" : "3px solid var(--gba-border)",
-              borderRadius: 12,
+              padding: 14,
+              background: selected === starter.id
+                ? "rgba(248,208,48,0.2)"
+                : "rgba(240,240,232,0.08)",
+              border: selected === starter.id
+                ? "3px solid #f8d030"
+                : "3px solid #585858",
+              borderRadius: 10,
               cursor: "pointer",
               transition: "all 0.15s",
             }}
@@ -76,14 +83,17 @@ export function StarterSelectScreen({ onSelect }: StarterSelectScreenProps) {
               alt={starter.name}
               style={{ width: 96, height: 96, imageRendering: "pixelated" }}
             />
-            <span style={{ fontSize: "0.6em", fontFamily: "'Press Start 2P'", color: "var(--gba-white)", textTransform: "uppercase" }}>
+            <span style={{
+              fontSize: "0.55em", fontFamily: "'Press Start 2P'",
+              color: "#f0f0e8", textTransform: "uppercase",
+            }}>
               {starter.name}
             </span>
             <span
               style={{
-                fontSize: "0.45em",
+                fontSize: "0.4em",
                 fontFamily: "'Press Start 2P'",
-                color: (starter.types[0] ? typeColors[starter.types[0]] : undefined) ?? "var(--gba-text)",
+                color: (starter.types[0] ? typeColors[starter.types[0]] : undefined) ?? "#a0a0a0",
                 textTransform: "uppercase",
               }}
             >
@@ -95,7 +105,7 @@ export function StarterSelectScreen({ onSelect }: StarterSelectScreenProps) {
 
       {selected !== null && (
         <button className="gba-button" onClick={handleConfirm} disabled={confirming}>
-          {confirming ? "CHOOSING..." : `I CHOOSE YOU!`}
+          {confirming ? "CHOOSING..." : "I CHOOSE YOU!"}
         </button>
       )}
     </div>

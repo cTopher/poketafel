@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, type FormEvent } from "react";
 import type { Question } from "@shared/types";
-import { TextBox } from "./TextBox";
 
 interface QuestionInputProps {
   question: Question;
@@ -12,7 +11,6 @@ export function QuestionInput({ question, onSubmit, disabled = false }: Question
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus input on new question
   useEffect(() => {
     setValue("");
     inputRef.current?.focus();
@@ -27,30 +25,61 @@ export function QuestionInput({ question, onSubmit, disabled = false }: Question
   }
 
   return (
-    <TextBox>
-      <form onSubmit={handleSubmit} style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "center" }}>
-        <span style={{ fontSize: "1.2em", color: "var(--gba-dark)" }}>
-          {question.factorA} x {question.factorB} =
-        </span>
-        <input
-          ref={inputRef}
-          className="gba-input"
-          type="number"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          disabled={disabled}
-          style={{ width: 80, textAlign: "center", fontSize: "1em" }}
-          autoFocus
-        />
-        <button
-          className="gba-button"
-          type="submit"
-          disabled={disabled || value === ""}
-          style={{ fontSize: "0.6em" }}
-        >
-          GO!
-        </button>
-      </form>
-    </TextBox>
+    <form
+      onSubmit={handleSubmit}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        justifyContent: "center",
+        width: "100%",
+      }}
+    >
+      <span style={{
+        fontSize: "1.1em",
+        color: "#383838",
+        fontFamily: "'Press Start 2P', monospace",
+      }}>
+        {question.factorA} x {question.factorB} =
+      </span>
+      <input
+        ref={inputRef}
+        type="number"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        disabled={disabled}
+        autoFocus
+        style={{
+          width: 80,
+          textAlign: "center",
+          fontSize: "1em",
+          fontFamily: "'Press Start 2P', monospace",
+          background: "#fff",
+          color: "#383838",
+          border: "3px solid #585858",
+          borderRadius: 4,
+          padding: "6px 8px",
+          outline: "none",
+        }}
+      />
+      <button
+        type="submit"
+        disabled={disabled || value === ""}
+        style={{
+          fontFamily: "'Press Start 2P', monospace",
+          fontSize: "0.6em",
+          background: "#4888c8",
+          color: "#fff",
+          border: "3px solid #385888",
+          borderRadius: 4,
+          padding: "8px 14px",
+          cursor: disabled || value === "" ? "default" : "pointer",
+          opacity: disabled || value === "" ? 0.5 : 1,
+          textShadow: "1px 1px 0 #283858",
+        }}
+      >
+        GO!
+      </button>
+    </form>
   );
 }

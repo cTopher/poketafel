@@ -27,28 +27,28 @@ export function HubScreen({ trainer, activePokemon, collectionCount, onNavigate 
         justifyContent: "center",
         height: "100%",
         gap: 20,
-        background: "linear-gradient(180deg, #1a3c6e 0%, #0f2847 50%, #1a1c2c 100%)",
+        background: "linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%)",
         padding: 32,
       }}
     >
       <h1
         style={{
           fontSize: "1.4em",
-          color: "var(--gba-gold)",
-          textShadow: "3px 3px 0 var(--gba-dark)",
+          color: "#f8d030",
+          textShadow: "3px 3px 0 #504000",
         }}
       >
         POKéTAFEL
       </h1>
 
-      <p style={{ fontSize: "0.55em", color: "var(--gba-cyan)" }}>
+      <p style={{ fontSize: "0.5em", color: "#a0d8a0" }}>
         Trainer {trainer.name}
       </p>
 
       {pokemonInfo && (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
           <PokemonSprite src={pokemonInfo.spriteFront} alt={pokemonInfo.name} size={96} />
-          <span style={{ fontSize: "0.5em", textTransform: "uppercase" }}>
+          <span style={{ fontSize: "0.5em", textTransform: "uppercase", color: "#f0f0e8" }}>
             {pokemonInfo.name} Lv.{activePokemon.level}
           </span>
         </div>
@@ -58,7 +58,10 @@ export function HubScreen({ trainer, activePokemon, collectionCount, onNavigate 
         <button
           className="gba-button"
           onClick={() => onNavigate("battle")}
-          style={{ width: "100%", fontSize: "0.65em", background: "var(--gba-red)", padding: "14px 20px" }}
+          style={{
+            width: "100%", fontSize: "0.65em", padding: "14px 20px",
+            background: "#e84040", border: "3px solid #b83030",
+          }}
         >
           BATTLE!
         </button>

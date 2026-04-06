@@ -1,24 +1,31 @@
 :root {
+  /* Emerald-inspired palette */
   --gba-bg: #1a1c2c;
   --gba-dark: #262b44;
   --gba-panel: #3a4466;
-  --gba-border: #5a6988;
-  --gba-text: #f4f4f4;
+  --gba-border: #585858;
+  --gba-text: #383838;
+  --gba-text-light: #f4f4f4;
   --gba-text-shadow: #262b44;
-  --gba-gold: #ffcd75;
-  --gba-red: #e83b3b;
+  --gba-gold: #f8b800;
+  --gba-red: #e84040;
   --gba-green: #38b764;
-  --gba-blue: #3b5dc9;
-  --gba-yellow: #f7ec6e;
+  --gba-blue: #4888c8;
+  --gba-yellow: #f8d030;
   --gba-orange: #f77622;
   --gba-purple: #b55088;
-  --gba-cyan: #41a6f6;
-  --gba-white: #ffffff;
-  --gba-hp-green: #38b764;
-  --gba-hp-yellow: #f7ec6e;
-  --gba-hp-red: #e83b3b;
-  --gba-grass: #63c74d;
-  --gba-sky: #73bef3;
+  --gba-cyan: #58a8d8;
+  --gba-white: #f0f0e8;
+  --gba-hp-green: #6be048;
+  --gba-hp-yellow: #f8d030;
+  --gba-hp-red: #f04038;
+  --gba-grass: #68a848;
+  --gba-sky: #88c8e8;
+
+  /* Emerald UI surfaces */
+  --gba-plate-bg: linear-gradient(180deg, #f0f0e0 0%, #c8c8b8 100%);
+  --gba-textbox-bg: #f0f0e8;
+  --gba-textbox-border: #585858;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -27,7 +34,7 @@ html, body, #root {
   width: 100%; height: 100%; overflow: hidden;
   background: #000;
   font-family: "Press Start 2P", monospace;
-  color: var(--gba-text);
+  color: var(--gba-text-light);
   -webkit-font-smoothing: none;
   image-rendering: pixelated;
 }
@@ -41,19 +48,31 @@ body { position: fixed; inset: 0; }
 .gba-button {
   font-family: "Press Start 2P", monospace; font-size: 0.7em;
   background: var(--gba-blue); color: var(--gba-white);
-  border: 3px solid var(--gba-border); border-radius: 6px;
+  border: 3px solid #385888; border-radius: 4px;
   padding: 10px 20px; cursor: pointer;
-  text-shadow: 1px 1px 0 var(--gba-text-shadow); transition: background 0.1s;
+  text-shadow: 1px 1px 0 #283858; transition: background 0.1s;
 }
 .gba-button:hover { background: var(--gba-cyan); }
 .gba-button:active { transform: scale(0.96); }
 
 .gba-input {
   font-family: "Press Start 2P", monospace; font-size: 0.8em;
-  background: var(--gba-dark); color: var(--gba-gold);
-  border: 3px solid var(--gba-border); border-radius: 6px;
+  background: #fff; color: #383838;
+  border: 3px solid var(--gba-border); border-radius: 4px;
   padding: 8px 12px; outline: none; width: 100%;
 }
 .gba-input:focus { border-color: var(--gba-cyan); }
+
+/* Emerald-style text box used across screens */
+.emerald-textbox {
+  background: var(--gba-textbox-bg);
+  border: 4px solid var(--gba-textbox-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.6em;
+  line-height: 1.8;
+  color: #383838;
+  box-shadow: inset -2px -2px 0 #b8b8a8, 2px 2px 0 rgba(0,0,0,0.2);
+}
 
 @keyframes blink-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }

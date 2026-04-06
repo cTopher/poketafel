@@ -37,13 +37,15 @@ export function CollectionScreen({ collection, onBack, onCollectionUpdate }: Col
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        background: "linear-gradient(180deg, var(--gba-dark) 0%, var(--gba-bg) 100%)",
+        background: "linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%)",
         padding: 24,
         gap: 16,
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2 style={{ fontSize: "0.8em", color: "var(--gba-gold)" }}>MY POKéMON</h2>
+        <h2 style={{ fontSize: "0.8em", color: "#f8d030", textShadow: "2px 2px 0 #504000" }}>
+          MY POKéMON
+        </h2>
         <button className="gba-button" onClick={onBack} style={{ fontSize: "0.5em" }}>
           BACK
         </button>
@@ -71,13 +73,13 @@ export function CollectionScreen({ collection, onBack, onCollectionUpdate }: Col
                 gap: 4,
                 padding: 8,
                 background: pokemon.is_active
-                  ? "rgba(255,205,117,0.2)"
+                  ? "rgba(248,208,48,0.2)"
                   : selected?.id === pokemon.id
-                  ? "rgba(255,255,255,0.1)"
-                  : "rgba(255,255,255,0.03)",
+                  ? "rgba(240,240,232,0.1)"
+                  : "rgba(240,240,232,0.04)",
                 border: pokemon.is_active
-                  ? "2px solid var(--gba-gold)"
-                  : "2px solid var(--gba-border)",
+                  ? "2px solid #f8d030"
+                  : "2px solid #585858",
                 borderRadius: 8,
                 cursor: "pointer",
               }}
@@ -85,12 +87,12 @@ export function CollectionScreen({ collection, onBack, onCollectionUpdate }: Col
               {info && (
                 <PokemonSprite src={info.spriteFront} alt={info.name} size={64} animation="none" />
               )}
-              <span style={{ fontSize: "0.35em", textTransform: "uppercase" }}>
+              <span style={{ fontSize: "0.35em", textTransform: "uppercase", color: "#f0f0e8" }}>
                 {info?.name ?? "???"}
               </span>
-              <span style={{ fontSize: "0.3em", color: "var(--gba-cyan)" }}>Lv.{pokemon.level}</span>
+              <span style={{ fontSize: "0.3em", color: "#a0d8a0" }}>Lv.{pokemon.level}</span>
               {pokemon.is_active && (
-                <span style={{ fontSize: "0.25em", color: "var(--gba-gold)" }}>ACTIVE</span>
+                <span style={{ fontSize: "0.25em", color: "#f8d030" }}>ACTIVE</span>
               )}
             </button>
           );

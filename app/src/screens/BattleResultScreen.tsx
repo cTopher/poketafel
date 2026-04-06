@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import type { BattleResult } from "@shared/types";
 import { useSound } from "../hooks/useSound";
-import { TextBox } from "../components/TextBox";
 import { PokemonSprite } from "../components/PokemonSprite";
 import type { PokemonBasicInfo } from "../lib/pokeapi";
 
@@ -22,9 +21,9 @@ export function BattleResultScreen({ result, playerPokemonInfo, caughtPokemonInf
   }, [result.outcome, playSfx]);
 
   const outcomeColors: Record<string, string> = {
-    won: "var(--gba-green)",
-    caught: "var(--gba-gold)",
-    lost: "var(--gba-red)",
+    won: "#68a848",
+    caught: "#f8d030",
+    lost: "#e84040",
   };
 
   const outcomeText: Record<string, string> = {
@@ -42,7 +41,7 @@ export function BattleResultScreen({ result, playerPokemonInfo, caughtPokemonInf
         justifyContent: "center",
         height: "100%",
         gap: 20,
-        background: "linear-gradient(180deg, var(--gba-dark) 0%, var(--gba-bg) 100%)",
+        background: "linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%)",
         padding: 40,
       }}
     >
@@ -50,7 +49,7 @@ export function BattleResultScreen({ result, playerPokemonInfo, caughtPokemonInf
         style={{
           fontSize: "1.5em",
           color: outcomeColors[result.outcome],
-          textShadow: "2px 2px 0 var(--gba-dark)",
+          textShadow: "2px 2px 0 #103010",
         }}
       >
         {outcomeText[result.outcome]}
@@ -62,39 +61,39 @@ export function BattleResultScreen({ result, playerPokemonInfo, caughtPokemonInf
         <PokemonSprite src={playerPokemonInfo.spriteFront} alt={playerPokemonInfo.name} size={96} />
       )}
 
-      <TextBox>
+      <div className="emerald-textbox" style={{ maxWidth: 400 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 8, textAlign: "center" }}>
           {result.outcome !== "lost" && (
-            <p style={{ color: "var(--gba-dark)" }}>
+            <p>
               {playerPokemonInfo.name} gained {result.xpGained} XP!
             </p>
           )}
 
           {result.leveledUp && (
-            <p style={{ color: "#3b5dc9" }}>
+            <p style={{ color: "#4888c8" }}>
               {playerPokemonInfo.name} grew to Lv.{result.newLevel}!
             </p>
           )}
 
           {result.evolved && result.evolvedTo && (
-            <p style={{ color: "#b55088" }}>
+            <p style={{ color: "#a848a8" }}>
               {playerPokemonInfo.name} is evolving...!
             </p>
           )}
 
           {result.outcome === "caught" && (
-            <p style={{ color: "#38b764" }}>
+            <p style={{ color: "#68a848" }}>
               {caughtPokemonInfo?.name ?? "Pokémon"} was caught!
             </p>
           )}
 
           {result.outcome === "lost" && (
-            <p style={{ color: "var(--gba-dark)" }}>
+            <p>
               Better luck next time! Keep practicing!
             </p>
           )}
         </div>
-      </TextBox>
+      </div>
 
       <button className="gba-button" onClick={onContinue} style={{ fontSize: "0.7em" }}>
         CONTINUE
