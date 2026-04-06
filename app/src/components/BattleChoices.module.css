@@ -1,0 +1,58 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 16px;
+  flex: 1;
+}
+
+.questionText {
+  font-size: 0.7em;
+  color: #383838;
+  font-family: "Press Start 2P", monospace;
+  text-align: center;
+}
+
+.choicesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+  flex: 1;
+}
+
+.choiceButton {
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.55em;
+  color: #383838;
+  background: #f0f0e8;
+  border: 3px solid #585858;
+  border-radius: 4px;
+  padding: 8px 4px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.1s;
+}
+
+.choiceButton:hover {
+  background: #d8d8d0;
+}
+
+.choiceButton:active {
+  transform: scale(0.96);
+}
+
+.backButton {
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.4em;
+  color: #585858;
+  background: transparent;
+  border: 2px solid #585858;
+  border-radius: 4px;
+  padding: 4px 12px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.backButton:hover {
+  background: rgba(88, 88, 88, 0.1);
+}
