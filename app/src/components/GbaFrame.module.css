@@ -4,6 +4,7 @@
   transform-origin: center center;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, var(--gba-dark) 0%, var(--gba-bg) 100%);
+  background: var(--gba-screen-bg);
   border-radius: 8px;
+  border: 4px solid var(--gba-dark);
 }

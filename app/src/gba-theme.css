@@ -1,12 +1,12 @@
 :root {
-  /* Emerald-inspired palette */
-  --gba-bg: #1a1c2c;
-  --gba-dark: #262b44;
-  --gba-panel: #3a4466;
-  --gba-border: #585858;
+  /* Emerald palette — matched from GBA screenshots */
+  --gba-bg: #b8d8b0;
+  --gba-dark: #485848;
+  --gba-panel: #f8f0d0;
+  --gba-border: #484848;
   --gba-text: #383838;
-  --gba-text-light: #f4f4f4;
-  --gba-text-shadow: #262b44;
+  --gba-text-light: #f8f8f0;
+  --gba-text-shadow: #484848;
   --gba-gold: #f8b800;
   --gba-red: #e84040;
   --gba-green: #38b764;
@@ -15,17 +15,20 @@
   --gba-orange: #f77622;
   --gba-purple: #b55088;
   --gba-cyan: #58a8d8;
-  --gba-white: #f0f0e8;
-  --gba-hp-green: #6be048;
-  --gba-hp-yellow: #f8d030;
-  --gba-hp-red: #f04038;
+  --gba-white: #f8f8f0;
+  --gba-hp-green: #58a028;
+  --gba-hp-yellow: #f8c800;
+  --gba-hp-red: #e04830;
   --gba-grass: #68a848;
-  --gba-sky: #88c8e8;
+  --gba-sky: #98d8a8;
 
   /* Emerald UI surfaces */
-  --gba-plate-bg: linear-gradient(180deg, #f0f0e0 0%, #c8c8b8 100%);
-  --gba-textbox-bg: #f0f0e8;
-  --gba-textbox-border: #585858;
+  --gba-plate-bg: linear-gradient(180deg, #f0e8c8 0%, #d8d0b0 100%);
+  --gba-textbox-bg: #f8f0d0;
+  --gba-textbox-border: #484848;
+  --gba-screen-bg: #78a870;
+  --gba-teal: #6898a0;
+  --gba-accent-red: #c83830;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -42,17 +45,24 @@ html, body, #root {
 body { position: fixed; inset: 0; }
 #root { display: flex; align-items: center; justify-content: center; }
 
-.gba-border { border: 3px solid var(--gba-border); outline: 3px solid var(--gba-dark); border-radius: 8px; }
-.gba-panel { background: var(--gba-panel); border: 3px solid var(--gba-border); border-radius: 8px; padding: 12px; }
+.gba-border { border: 3px solid var(--gba-border); border-radius: 8px; }
+.gba-panel {
+  background: var(--gba-panel);
+  border: 3px solid var(--gba-border);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+}
 
 .gba-button {
   font-family: "Press Start 2P", monospace; font-size: 0.7em;
-  background: var(--gba-blue); color: var(--gba-white);
-  border: 3px solid #385888; border-radius: 4px;
+  background: var(--gba-panel); color: var(--gba-text);
+  border: 3px solid var(--gba-border); border-radius: 6px;
   padding: 10px 20px; cursor: pointer;
-  text-shadow: 1px 1px 0 #283858; transition: background 0.1s;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+  transition: background 0.1s;
 }
-.gba-button:hover { background: var(--gba-cyan); }
+.gba-button:hover { background: #e8e0c0; }
 .gba-button:active { transform: scale(0.96); }
 
 .gba-input {
@@ -61,18 +71,18 @@ body { position: fixed; inset: 0; }
   border: 3px solid var(--gba-border); border-radius: 4px;
   padding: 8px 12px; outline: none; width: 100%;
 }
-.gba-input:focus { border-color: var(--gba-cyan); }
+.gba-input:focus { border-color: var(--gba-blue); }
 
 /* Emerald-style text box used across screens */
 .emerald-textbox {
   background: var(--gba-textbox-bg);
-  border: 4px solid var(--gba-textbox-border);
+  border: 3px solid var(--gba-textbox-border);
   border-radius: 8px;
   padding: 12px 16px;
   font-size: 0.6em;
   line-height: 1.8;
   color: #383838;
-  box-shadow: inset -2px -2px 0 #b8b8a8, 2px 2px 0 rgba(0,0,0,0.2);
+  box-shadow: inset -2px -2px 0 #c8c0a0, 2px 2px 0 rgba(0,0,0,0.15);
 }
 
 @keyframes blink-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }

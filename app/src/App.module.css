@@ -4,5 +4,6 @@
   justify-content: center;
   height: 100%;
   font-size: 0.8em;
-  color: var(--gba-gold);
+  color: var(--gba-text);
+  background: var(--gba-screen-bg);
 }
