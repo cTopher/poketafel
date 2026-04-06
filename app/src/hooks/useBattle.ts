@@ -15,8 +15,7 @@ import {
 import {
   buildDifficultyMap,
   pickWeightedQuestion,
-  calculateScoreDelta,
-  applyScoreDelta,
+  setScore,
   generateChoices,
   type DifficultyMap,
 } from "../lib/difficulty";
@@ -79,8 +78,6 @@ export function useBattle({
     (givenAnswer: number) => {
       const timeMs = Date.now() - answerStart;
       const { currentQuestion } = battle;
-      const correct =
-        givenAnswer === currentQuestion.factorA * currentQuestion.factorB;
 
       api
         .submitAnswer({
@@ -89,15 +86,18 @@ export function useBattle({
           given_answer: givenAnswer,
           time_ms: timeMs,
         })
+        .then((res) => {
+          setScore(
+            difficultyMap,
+            currentQuestion.factorA,
+            currentQuestion.factorB,
+            res.new_score,
+          );
+        })
         .catch(() => {});
 
-      const delta = calculateScoreDelta(correct, timeMs);
-      applyScoreDelta(
-        difficultyMap,
-        currentQuestion.factorA,
-        currentQuestion.factorB,
-        delta,
-      );
+      const correct =
+        givenAnswer === currentQuestion.factorA * currentQuestion.factorB;
 
       const nextRetryQueue = correct
         ? battle.retryQueue.filter(
