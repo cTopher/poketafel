@@ -87,6 +87,8 @@ export type Screen =
   | "battle-result"
   | "collection";
 
+export type BattleMode = "menu" | "fight" | "catch" | "pokemon";
+
 export interface BattleState {
   wildPokemon: WildPokemon;
   playerPokemon: OwnedPokemon;
@@ -99,6 +101,7 @@ export interface BattleState {
   turnResult: TurnResult | null;
   canCatch: boolean;
   catchMode: boolean;
+  mode: BattleMode;
   status: "active" | "won" | "lost" | "caught";
   xpGained: number;
 }

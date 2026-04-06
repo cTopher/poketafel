@@ -1,4 +1,4 @@
-import type { BattleState, OwnedPokemon, WildPokemon, Question, TurnResult } from "@shared/types";
+import type { BattleState, OwnedPokemon, WildPokemon, Question, TurnResult, BattleMode } from "@shared/types";
 import {
   FLAT_DAMAGE,
   PLAYER_BASE_HP,
@@ -42,6 +42,7 @@ export function createBattle(
     turnResult: null,
     canCatch: false,
     catchMode: false,
+    mode: "menu",
     status: "active",
     xpGained: 0,
   };
@@ -131,18 +132,38 @@ export function attemptCatch(state: BattleState, givenAnswer: number): BattleSta
         question: currentQuestion,
       },
       catchMode: false,
+      mode: "menu",
     };
   }
 
-  // Catch failed — continue battle
+  // Catch failed — enemy free attack, return to menu
+  const newPlayerHp = Math.max(0, state.playerHp - FLAT_DAMAGE);
+  const newStatus = newPlayerHp <= 0 ? "lost" as const : state.status;
+
   return {
     ...state,
+    playerHp: newPlayerHp,
+    status: newStatus,
+    xpGained: newStatus === "lost" ? 0 : state.xpGained,
     catchMode: false,
+    mode: "menu",
     turnResult: {
       correct: false,
       correctAnswer,
       givenAnswer,
       question: currentQuestion,
     },
+  };
+}
+
+export function applyFreeDamage(state: BattleState): BattleState {
+  const newPlayerHp = Math.max(0, state.playerHp - FLAT_DAMAGE);
+  const newStatus = newPlayerHp <= 0 ? "lost" as const : state.status;
+  return {
+    ...state,
+    playerHp: newPlayerHp,
+    status: newStatus,
+    xpGained: newStatus === "lost" ? 0 : state.xpGained,
+    mode: "menu",
   };
 }

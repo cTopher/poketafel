@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createBattle, submitAnswer, canThrowPokeball, getPlayerStats } from "../battle-engine";
+import { createBattle, submitAnswer, canThrowPokeball, getPlayerStats, attemptCatch, applyFreeDamage } from "../battle-engine";
 import { FLAT_DAMAGE, CATCH_HP_THRESHOLD, PLAYER_BASE_HP, HP_PER_LEVEL } from "@shared/types";
 import type { OwnedPokemon, WildPokemon, Question } from "@shared/types";
 
@@ -21,6 +21,11 @@ describe("createBattle", () => {
     expect(battle.playerHp).toBe(battle.playerMaxHp);
     expect(battle.wildHp).toBe(battle.wildMaxHp);
     expect(battle.currentQuestion).toEqual(mockQuestion);
+  });
+
+  it("initializes with mode 'menu'", () => {
+    const state = createBattle(mockPlayer, mockWild, mockQuestion);
+    expect(state.mode).toBe("menu");
   });
 });
 
@@ -67,5 +72,39 @@ describe("canThrowPokeball", () => {
 
   it("returns false when wild HP is above threshold", () => {
     expect(canThrowPokeball(50, 100)).toBe(false);
+  });
+});
+
+describe("attemptCatch", () => {
+  it("deals FLAT_DAMAGE on failed catch", () => {
+    const state = createBattle(mockPlayer, mockWild, mockQuestion);
+    const before = state.playerHp;
+    const after = attemptCatch(state, 999);
+    expect(after.playerHp).toBe(before - FLAT_DAMAGE);
+    expect(after.mode).toBe("menu");
+  });
+
+  it("sets status to caught on correct answer", () => {
+    const state = createBattle(mockPlayer, mockWild, mockQuestion);
+    const after = attemptCatch(state, 56);
+    expect(after.status).toBe("caught");
+  });
+});
+
+describe("applyFreeDamage", () => {
+  it("reduces player HP by FLAT_DAMAGE", () => {
+    const state = createBattle(mockPlayer, mockWild, mockQuestion);
+    const before = state.playerHp;
+    const after = applyFreeDamage(state);
+    expect(after.playerHp).toBe(before - FLAT_DAMAGE);
+    expect(after.mode).toBe("menu");
+  });
+
+  it("sets status to lost when HP reaches 0", () => {
+    const state = { ...createBattle(mockPlayer, mockWild, mockQuestion), playerHp: 5 };
+    const after = applyFreeDamage(state);
+    expect(after.playerHp).toBe(0);
+    expect(after.status).toBe("lost");
+    expect(after.xpGained).toBe(0);
   });
 });
