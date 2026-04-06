@@ -1,14 +1,5 @@
 import type { DifficultyRow, Question } from "@shared/types";
-import {
-  DIFFICULTY_DEFAULT,
-  DIFFICULTY_MIN,
-  DIFFICULTY_WRONG_DELTA,
-  DIFFICULTY_SLOW_DELTA,
-  DIFFICULTY_MODERATE_DELTA,
-  DIFFICULTY_FAST_DELTA,
-  SLOW_THRESHOLD_MS,
-  FAST_THRESHOLD_MS,
-} from "@shared/types";
+import { DIFFICULTY_DEFAULT } from "@shared/types";
 
 export type DifficultyMap = Map<string, number>;
 
@@ -34,22 +25,13 @@ export function buildDifficultyMap(rows: DifficultyRow[]): DifficultyMap {
   return map;
 }
 
-export function calculateScoreDelta(correct: boolean, timeMs: number): number {
-  if (!correct) return DIFFICULTY_WRONG_DELTA;
-  if (timeMs > SLOW_THRESHOLD_MS) return DIFFICULTY_SLOW_DELTA;
-  if (timeMs > FAST_THRESHOLD_MS) return DIFFICULTY_MODERATE_DELTA;
-  return DIFFICULTY_FAST_DELTA;
-}
-
-export function applyScoreDelta(
+export function setScore(
   map: DifficultyMap,
   factorA: number,
   factorB: number,
-  delta: number,
+  score: number,
 ): void {
-  const k = key(factorA, factorB);
-  const current = map.get(k) ?? DIFFICULTY_DEFAULT;
-  map.set(k, Math.max(DIFFICULTY_MIN, current + delta));
+  map.set(key(factorA, factorB), score);
 }
 
 export function pickWeightedQuestion(
