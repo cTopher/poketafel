@@ -10,7 +10,7 @@ import { CollectionScreen } from "./screens/CollectionScreen";
 import { api } from "./lib/api-client";
 import { getPokemon, type PokemonBasicInfo } from "./lib/pokeapi";
 import { xpToNextLevel } from "@shared/types";
-import type { Screen, BattleResult, OwnedPokemon } from "@shared/types";
+import type { Screen, BattleResult } from "@shared/types";
 import { checkEvolution } from "./lib/evolution";
 import styles from "./App.module.css";
 
@@ -18,16 +18,20 @@ export function App() {
   const auth = useAuth();
   const [screen, setScreen] = useState<Screen>("login");
   const [battleResult, setBattleResult] = useState<BattleResult | null>(null);
-  const [playerPokemonInfo, setPlayerPokemonInfo] = useState<PokemonBasicInfo | null>(null);
-  const [caughtPokemonInfo, setCaughtPokemonInfo] = useState<PokemonBasicInfo | null>(null);
+  const [playerPokemonInfo, setPlayerPokemonInfo] =
+    useState<PokemonBasicInfo | null>(null);
+  const [caughtPokemonInfo, setCaughtPokemonInfo] =
+    useState<PokemonBasicInfo | null>(null);
 
-  const activePokemon = auth.collection.find((p) => p.is_active) ?? auth.collection[0];
+  const activePokemon =
+    auth.collection.find((p) => p.is_active) ?? auth.collection[0];
+  const activePokemonPokeapiId = activePokemon?.pokeapi_id;
 
   useEffect(() => {
-    if (activePokemon) {
-      getPokemon(activePokemon.pokeapi_id).then(setPlayerPokemonInfo);
+    if (activePokemonPokeapiId !== undefined) {
+      void getPokemon(activePokemonPokeapiId).then(setPlayerPokemonInfo);
     }
-  }, [activePokemon?.pokeapi_id]);
+  }, [activePokemonPokeapiId]);
 
   useEffect(() => {
     if (auth.trainer && !auth.loading) {
@@ -56,7 +60,9 @@ export function App() {
       const newXp = activePokemon.xp + result.xpGained;
       const needed = xpToNextLevel(activePokemon.level);
       const leveledUp = newXp >= needed;
-      const newLevel = leveledUp ? activePokemon.level + 1 : activePokemon.level;
+      const newLevel = leveledUp
+        ? activePokemon.level + 1
+        : activePokemon.level;
 
       await api.updatePokemon({
         pokemon_id: activePokemon.id,
@@ -65,7 +71,10 @@ export function App() {
       });
 
       if (leveledUp) {
-        const evoCheck = await checkEvolution(activePokemon.pokeapi_id, newLevel);
+        const evoCheck = await checkEvolution(
+          activePokemon.pokeapi_id,
+          newLevel,
+        );
         if (evoCheck.shouldEvolve && evoCheck.evolvesToId) {
           result = {
             ...result,
@@ -97,7 +106,10 @@ export function App() {
         <StarterSelectScreen
           onSelect={async (pokeapiId) => {
             const caught = await api.catchPokemon({ pokeapi_id: pokeapiId });
-            await api.updatePokemon({ pokemon_id: caught.id, set_active: true });
+            await api.updatePokemon({
+              pokemon_id: caught.id,
+              set_active: true,
+            });
             const collection = await api.getCollection();
             auth.updateCollection(collection);
             setScreen("hub");
@@ -107,7 +119,7 @@ export function App() {
 
       {screen === "hub" && activePokemon && (
         <HubScreen
-          trainer={auth.trainer!}
+          trainer={auth.trainer}
           activePokemon={activePokemon}
           collectionCount={auth.collection.length}
           onNavigate={setScreen}
@@ -141,7 +153,9 @@ export function App() {
       {screen === "collection" && (
         <CollectionScreen
           collection={auth.collection}
-          onBack={() => setScreen("hub")}
+          onBack={() => {
+            setScreen("hub");
+          }}
           onCollectionUpdate={auth.updateCollection}
         />
       )}

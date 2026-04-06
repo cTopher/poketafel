@@ -26,15 +26,28 @@
   --gba-plate-bg: linear-gradient(180deg, #f0e8c8 0%, #d8d0b0 100%);
   --gba-textbox-bg: #f8f0d0;
   --gba-textbox-border: #484848;
-  --gba-screen-bg: linear-gradient(180deg, #3a5a9c 0%, #4a6aac 50%, #5a8acc 100%);
+  --gba-screen-bg: linear-gradient(
+    180deg,
+    #3a5a9c 0%,
+    #4a6aac 50%,
+    #5a8acc 100%
+  );
   --gba-teal: #6898a0;
   --gba-accent-red: #c83830;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-html, body, #root {
-  width: 100%; height: 100%; overflow: hidden;
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   background: #000;
   font-family: "Press Start 2P", monospace;
   color: var(--gba-text-light);
@@ -42,36 +55,61 @@ html, body, #root {
   image-rendering: pixelated;
 }
 
-body { position: fixed; inset: 0; }
-#root { display: flex; align-items: center; justify-content: center; }
+body {
+  position: fixed;
+  inset: 0;
+}
+#root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-.gba-border { border: 3px solid var(--gba-border); border-radius: 8px; }
+.gba-border {
+  border: 3px solid var(--gba-border);
+  border-radius: 8px;
+}
 .gba-panel {
   background: var(--gba-panel);
   border: 3px solid var(--gba-border);
   border-radius: 8px;
   padding: 12px;
-  box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.15);
 }
 
 .gba-button {
-  font-family: "Press Start 2P", monospace; font-size: 0.7em;
-  background: var(--gba-panel); color: var(--gba-text);
-  border: 3px solid var(--gba-border); border-radius: 6px;
-  padding: 10px 20px; cursor: pointer;
-  box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.7em;
+  background: var(--gba-panel);
+  color: var(--gba-text);
+  border: 3px solid var(--gba-border);
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.15);
   transition: background 0.1s;
 }
-.gba-button:hover { background: #e8e0c0; }
-.gba-button:active { transform: scale(0.96); }
+.gba-button:hover {
+  background: #e8e0c0;
+}
+.gba-button:active {
+  transform: scale(0.96);
+}
 
 .gba-input {
-  font-family: "Press Start 2P", monospace; font-size: 0.8em;
-  background: #fff; color: #383838;
-  border: 3px solid var(--gba-border); border-radius: 4px;
-  padding: 8px 12px; outline: none; width: 100%;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.8em;
+  background: #fff;
+  color: #383838;
+  border: 3px solid var(--gba-border);
+  border-radius: 4px;
+  padding: 8px 12px;
+  outline: none;
+  width: 100%;
 }
-.gba-input:focus { border-color: var(--gba-blue); }
+.gba-input:focus {
+  border-color: var(--gba-blue);
+}
 
 /* Emerald-style text box used across screens */
 .emerald-textbox {
@@ -82,7 +120,17 @@ body { position: fixed; inset: 0; }
   font-size: 0.6em;
   line-height: 1.8;
   color: #383838;
-  box-shadow: inset -2px -2px 0 #c8c0a0, 2px 2px 0 rgba(0,0,0,0.15);
+  box-shadow:
+    inset -2px -2px 0 #c8c0a0,
+    2px 2px 0 rgba(0, 0, 0, 0.15);
 }
 
-@keyframes blink-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes blink-cursor {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}

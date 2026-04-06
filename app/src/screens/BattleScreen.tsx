@@ -1,9 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { OwnedPokemon, DifficultyRow, BattleResult } from "@shared/types";
 import { xpToNextLevel } from "@shared/types";
 import { useBattle } from "../hooks/useBattle";
 import { useSound } from "../hooks/useSound";
-import { getPokemon, randomWildPokemonId, type PokemonBasicInfo } from "../lib/pokeapi";
+import {
+  getPokemon,
+  randomWildPokemonId,
+  type PokemonBasicInfo,
+} from "../lib/pokeapi";
 import { NamePlate } from "../components/NamePlate";
 import { PokemonSprite } from "../components/PokemonSprite";
 import { ActionMenu } from "../components/ActionMenu";
@@ -17,18 +21,25 @@ interface BattleScreenProps {
   playerPokemonInfo: PokemonBasicInfo;
   difficultyRows: DifficultyRow[];
   collection: OwnedPokemon[];
-  onEnd: (result: BattleResult) => void;
+  onEnd: (result: BattleResult) => void | Promise<void>;
   onCollectionUpdate: (collection: OwnedPokemon[]) => void;
 }
 
-export function BattleScreen({ playerPokemon, playerPokemonInfo, difficultyRows, collection, onEnd, onCollectionUpdate }: BattleScreenProps) {
+export function BattleScreen({
+  playerPokemon,
+  playerPokemonInfo,
+  difficultyRows,
+  collection,
+  onEnd,
+  onCollectionUpdate,
+}: BattleScreenProps) {
   const [wildInfo, setWildInfo] = useState<PokemonBasicInfo | null>(null);
   const [wildPokemon, setWildPokemon] = useState<WildPokemon | null>(null);
   const { playCry } = useSound();
 
   useEffect(() => {
     const wildId = randomWildPokemonId();
-    getPokemon(wildId).then((info) => {
+    void getPokemon(wildId).then((info) => {
       setWildInfo(info);
       setWildPokemon({
         pokeapiId: info.id,
@@ -43,9 +54,7 @@ export function BattleScreen({ playerPokemon, playerPokemonInfo, difficultyRows,
 
   if (!wildPokemon || !wildInfo) {
     return (
-      <div className={styles.loadingBattle}>
-        A wild POKéMON appears...
-      </div>
+      <div className={styles.loadingBattle}>A wild POKéMON appears...</div>
     );
   }
 
@@ -72,28 +81,73 @@ function BattleActive({
   collection,
   onEnd,
   onCollectionUpdate,
-}: BattleScreenProps & { wildPokemon: WildPokemon; wildInfo: PokemonBasicInfo }) {
+}: BattleScreenProps & {
+  wildPokemon: WildPokemon;
+  wildInfo: PokemonBasicInfo;
+}) {
   const {
-    battle, choices, enterFight, enterCatch, setMode,
-    handleAnswer, handleCatch, handleSwitch, handleRun,
+    battle,
+    choices,
+    enterFight,
+    enterCatch,
+    setMode,
+    handleAnswer,
+    handleCatch,
+    handleSwitch,
+    handleRun,
   } = useBattle({
     playerPokemon,
     wildPokemon,
     difficultyRows,
-    onBattleEnd: () => {},
   });
   const { playSfx, playCry } = useSound();
-  const [spriteAnims, setSpriteAnims] = useState({ wild: "idle", player: "idle" });
+  type SpriteAnimation =
+    | "idle"
+    | "attack"
+    | "damage"
+    | "faint"
+    | "entrance"
+    | "none";
+  const [spriteAnims, setSpriteAnims] = useState<{
+    wild: SpriteAnimation;
+    player: SpriteAnimation;
+  }>({
+    wild: "idle",
+    player: "idle",
+  });
+
+  const finishBattle = useCallback(
+    (outcome: "won" | "lost" | "caught") => {
+      const xpGained = battle.xpGained;
+      const currentXp = playerPokemon.xp + xpGained;
+      const needed = xpToNextLevel(playerPokemon.level);
+      const leveledUp = currentXp >= needed;
+      const newLevel = leveledUp
+        ? playerPokemon.level + 1
+        : playerPokemon.level;
+
+      void onEnd({
+        outcome,
+        xpGained,
+        leveledUp,
+        newLevel,
+        evolved: false,
+        evolvedTo: null,
+        caughtPokemon: outcome === "caught" ? wildPokemon : null,
+      });
+    },
+    [battle.xpGained, onEnd, playerPokemon, wildPokemon],
+  );
 
   // Check for battle end from run or lost-during-catch/switch
   useEffect(() => {
     if (battle.status === "lost") {
       finishBattle("lost");
     }
-  }, [battle.status]);
+  }, [battle.status, finishBattle]);
 
-  async function onFightAnswer(givenAnswer: number) {
-    const result = await handleAnswer(givenAnswer);
+  function onFightAnswer(givenAnswer: number) {
+    const result = handleAnswer(givenAnswer);
 
     if (result.turnResult?.correct) {
       playSfx("hit");
@@ -104,11 +158,15 @@ function BattleActive({
       setSpriteAnims({ wild: "idle", player: "damage" });
     }
 
-    setTimeout(() => setSpriteAnims({ wild: "idle", player: "idle" }), 400);
+    setTimeout(() => {
+      setSpriteAnims({ wild: "idle", player: "idle" });
+    }, 400);
 
     if (result.status !== "active") {
-      const outcome = result.status as "won" | "lost" | "caught";
-      setTimeout(() => finishBattle(outcome), 800);
+      const outcome = result.status;
+      setTimeout(() => {
+        finishBattle(outcome);
+      }, 800);
     }
   }
 
@@ -122,7 +180,9 @@ function BattleActive({
       playSfx("wrong");
       // Free damage applied by attemptCatch, animate it
       setSpriteAnims({ wild: "attack", player: "damage" });
-      setTimeout(() => setSpriteAnims({ wild: "idle", player: "idle" }), 400);
+      setTimeout(() => {
+        setSpriteAnims({ wild: "idle", player: "idle" });
+      }, 400);
       // mode already set to "menu" by attemptCatch
     }
   }
@@ -133,28 +193,12 @@ function BattleActive({
 
   function onSwitchPokemon(updated: OwnedPokemon[]) {
     onCollectionUpdate(updated);
-    const newState = handleSwitch();
+    handleSwitch();
     // Animate enemy free attack
     setSpriteAnims({ wild: "attack", player: "damage" });
-    setTimeout(() => setSpriteAnims({ wild: "idle", player: "idle" }), 400);
-  }
-
-  function finishBattle(outcome: "won" | "lost" | "caught") {
-    const xpGained = battle.xpGained;
-    const currentXp = playerPokemon.xp + xpGained;
-    const needed = xpToNextLevel(playerPokemon.level);
-    const leveledUp = currentXp >= needed;
-    const newLevel = leveledUp ? playerPokemon.level + 1 : playerPokemon.level;
-
-    onEnd({
-      outcome,
-      xpGained,
-      leveledUp,
-      newLevel,
-      evolved: false,
-      evolvedTo: null,
-      caughtPokemon: outcome === "caught" ? wildPokemon : null,
-    });
+    setTimeout(() => {
+      setSpriteAnims({ wild: "idle", player: "idle" });
+    }, 400);
   }
 
   // Pokemon mode renders collection fullscreen
@@ -162,7 +206,9 @@ function BattleActive({
     return (
       <CollectionScreen
         collection={collection}
-        onBack={() => setMode("menu")}
+        onBack={() => {
+          setMode("menu");
+        }}
         onCollectionUpdate={onSwitchPokemon}
       />
     );
@@ -190,7 +236,7 @@ function BattleActive({
             src={wildInfo.spriteFront}
             alt={wildPokemon.name}
             size={170}
-            animation={spriteAnims.wild as any}
+            animation={spriteAnims.wild}
           />
         </div>
 
@@ -211,7 +257,7 @@ function BattleActive({
             src={playerPokemonInfo.spriteBack}
             alt={playerPokemon.nickname ?? playerPokemonInfo.name}
             size={190}
-            animation={spriteAnims.player as any}
+            animation={spriteAnims.player}
           />
         </div>
       </div>
@@ -228,11 +274,14 @@ function BattleActive({
             {battle.mode === "fight" && battle.status === "active" && (
               <>
                 <span className={styles.bottomLeftText}>
-                  {battle.currentQuestion.factorA} x {battle.currentQuestion.factorB} = ?
+                  {battle.currentQuestion.factorA} x{" "}
+                  {battle.currentQuestion.factorB} = ?
                 </span>
                 {battle.turnResult && !battle.turnResult.correct && (
                   <div className={styles.wrongAnswer}>
-                    {battle.turnResult.question.factorA} x {battle.turnResult.question.factorB} = {battle.turnResult.correctAnswer}
+                    {battle.turnResult.question.factorA} x{" "}
+                    {battle.turnResult.question.factorB} ={" "}
+                    {battle.turnResult.correctAnswer}
                   </div>
                 )}
               </>
@@ -240,7 +289,8 @@ function BattleActive({
             {battle.mode === "catch" && battle.status === "active" && (
               <>
                 <span className={styles.bottomLeftText}>
-                  {battle.currentQuestion.factorA} x {battle.currentQuestion.factorB} = ?
+                  {battle.currentQuestion.factorA} x{" "}
+                  {battle.currentQuestion.factorB} = ?
                 </span>
                 <div className={styles.wrongAnswer}>Catch it!</div>
               </>
@@ -252,7 +302,9 @@ function BattleActive({
           {battle.mode === "menu" && battle.status === "active" && (
             <ActionMenu
               onFight={enterFight}
-              onPokemon={() => setMode("pokemon")}
+              onPokemon={() => {
+                setMode("pokemon");
+              }}
               onCatch={enterCatch}
               onRun={onRunAction}
               catchEnabled={battle.canCatch}
@@ -263,15 +315,14 @@ function BattleActive({
             <BattleChoices
               choices={choices}
               onAnswer={onFightAnswer}
-              onBack={() => setMode("menu")}
+              onBack={() => {
+                setMode("menu");
+              }}
             />
           )}
 
           {battle.mode === "catch" && battle.status === "active" && (
-            <BattleChoices
-              choices={choices}
-              onAnswer={onCatchAnswer}
-            />
+            <BattleChoices choices={choices} onAnswer={onCatchAnswer} />
           )}
         </div>
       </div>

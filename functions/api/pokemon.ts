@@ -1,6 +1,6 @@
 import { getDb, type Env } from "./_db";
 import { getTrainerId, unauthorized, json } from "./_auth";
-import type { CatchRequest, OwnedPokemon } from "../../shared/types";
+import type { CatchRequest } from "../../shared/types";
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const trainerId = getTrainerId(context.request);

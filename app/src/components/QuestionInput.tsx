@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, type FormEvent } from "react";
+import { useState, useRef, useEffect } from "react";
+import type { SubmitEvent as ReactSubmitEvent } from "react";
 import type { Question } from "@shared/types";
 import styles from "./QuestionInput.module.css";
 
@@ -8,7 +9,11 @@ interface QuestionInputProps {
   disabled?: boolean;
 }
 
-export function QuestionInput({ question, onSubmit, disabled = false }: QuestionInputProps) {
+export function QuestionInput({
+  question,
+  onSubmit,
+  disabled = false,
+}: QuestionInputProps) {
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -17,7 +22,7 @@ export function QuestionInput({ question, onSubmit, disabled = false }: Question
     inputRef.current?.focus();
   }, [question.factorA, question.factorB]);
 
-  function handleSubmit(e: FormEvent) {
+  function handleSubmit(e: ReactSubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const num = parseInt(value, 10);
     if (isNaN(num)) return;
@@ -34,7 +39,9 @@ export function QuestionInput({ question, onSubmit, disabled = false }: Question
         ref={inputRef}
         type="number"
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => {
+          setValue(e.target.value);
+        }}
         disabled={disabled}
         autoFocus
         className={styles.input}

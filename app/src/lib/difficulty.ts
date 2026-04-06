@@ -41,16 +41,25 @@ export function calculateScoreDelta(correct: boolean, timeMs: number): number {
   return DIFFICULTY_FAST_DELTA;
 }
 
-export function applyScoreDelta(map: DifficultyMap, factorA: number, factorB: number, delta: number): void {
+export function applyScoreDelta(
+  map: DifficultyMap,
+  factorA: number,
+  factorB: number,
+  delta: number,
+): void {
   const k = key(factorA, factorB);
   const current = map.get(k) ?? DIFFICULTY_DEFAULT;
   map.set(k, Math.max(DIFFICULTY_MIN, current + delta));
 }
 
-export function pickWeightedQuestion(map: DifficultyMap, retryQueue: Question[]): Question {
+export function pickWeightedQuestion(
+  map: DifficultyMap,
+  retryQueue: Question[],
+): Question {
   // Retry queue takes priority
   if (retryQueue.length > 0) {
-    return retryQueue[0]!;
+    const first = retryQueue[0];
+    if (first) return first;
   }
 
   // Weighted random selection
@@ -61,8 +70,8 @@ export function pickWeightedQuestion(map: DifficultyMap, retryQueue: Question[])
   for (const [k, score] of entries) {
     roll -= score;
     if (roll <= 0) {
-      const parts = k.split("x").map(Number);
-      return { factorA: parts[0]!, factorB: parts[1]! };
+      const [factorA, factorB] = k.split("x").map(Number);
+      return { factorA: factorA ?? 5, factorB: factorB ?? 5 };
     }
   }
 

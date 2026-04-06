@@ -11,18 +11,26 @@ interface CollectionScreenProps {
   onCollectionUpdate: (collection: OwnedPokemon[]) => void;
 }
 
-export function CollectionScreen({ collection, onBack, onCollectionUpdate }: CollectionScreenProps) {
-  const [pokemonInfos, setPokemonInfos] = useState<Map<number, PokemonBasicInfo>>(new Map());
+export function CollectionScreen({
+  collection,
+  onBack,
+  onCollectionUpdate,
+}: CollectionScreenProps) {
+  const [pokemonInfos, setPokemonInfos] = useState(
+    new Map<number, PokemonBasicInfo>(),
+  );
   const [selected, setSelected] = useState<OwnedPokemon | null>(null);
 
   useEffect(() => {
-    Promise.all(collection.map((p) => getPokemon(p.pokeapi_id))).then((infos) => {
-      const map = new Map<number, PokemonBasicInfo>();
-      for (const info of infos) {
-        map.set(info.id, info);
-      }
-      setPokemonInfos(map);
-    });
+    void Promise.all(collection.map((p) => getPokemon(p.pokeapi_id))).then(
+      (infos) => {
+        const map = new Map<number, PokemonBasicInfo>();
+        for (const info of infos) {
+          map.set(info.id, info);
+        }
+        setPokemonInfos(map);
+      },
+    );
   }, [collection]);
 
   async function handleSetActive(pokemon: OwnedPokemon) {
@@ -48,21 +56,26 @@ export function CollectionScreen({ collection, onBack, onCollectionUpdate }: Col
             pokemon.is_active
               ? styles.pokemonCardActive
               : selected?.id === pokemon.id
-              ? styles.pokemonCardSelected
-              : ""
+                ? styles.pokemonCardSelected
+                : ""
           }`;
           return (
             <button
               key={pokemon.id}
-              onClick={() => setSelected(pokemon)}
+              onClick={() => {
+                setSelected(pokemon);
+              }}
               className={cardClass}
             >
               {info && (
-                <PokemonSprite src={info.spriteFront} alt={info.name} size={64} animation="none" />
+                <PokemonSprite
+                  src={info.spriteFront}
+                  alt={info.name}
+                  size={64}
+                  animation="none"
+                />
               )}
-              <span className={styles.pokemonName}>
-                {info?.name ?? "???"}
-              </span>
+              <span className={styles.pokemonName}>{info?.name ?? "???"}</span>
               <span className={styles.pokemonLevel}>Lv.{pokemon.level}</span>
               {pokemon.is_active && (
                 <span className={styles.activeLabel}>ACTIVE</span>
@@ -76,7 +89,9 @@ export function CollectionScreen({ collection, onBack, onCollectionUpdate }: Col
         <div className={styles.setActiveArea}>
           <button
             className={`gba-button ${styles.setActiveButton}`}
-            onClick={() => handleSetActive(selected)}
+            onClick={() => {
+              void handleSetActive(selected);
+            }}
           >
             SET AS ACTIVE
           </button>

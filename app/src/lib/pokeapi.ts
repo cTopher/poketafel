@@ -22,15 +22,22 @@ export async function getPokemon(id: number): Promise<PokemonBasicInfo> {
   const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
   const data = await res.json();
 
-  const bwAnimated = data.sprites?.versions?.["generation-v"]?.["black-white"]?.animated;
+  const bwAnimated =
+    data.sprites?.versions?.["generation-v"]?.["black-white"]?.animated;
   const showdown = data.sprites?.other?.showdown;
 
   const info: PokemonBasicInfo = {
     id: data.id,
     name: data.name,
     types: data.types.map((t: { type: { name: string } }) => t.type.name),
-    spriteFront: bwAnimated?.front_default || showdown?.front_default || data.sprites?.front_default,
-    spriteBack: bwAnimated?.back_default || showdown?.back_default || data.sprites?.back_default,
+    spriteFront:
+      bwAnimated?.front_default ||
+      showdown?.front_default ||
+      data.sprites?.front_default,
+    spriteBack:
+      bwAnimated?.back_default ||
+      showdown?.back_default ||
+      data.sprites?.back_default,
     cryUrl: data.cries?.latest || data.cries?.legacy,
   };
 
@@ -38,8 +45,12 @@ export async function getPokemon(id: number): Promise<PokemonBasicInfo> {
   return info;
 }
 
-export async function getEvolutionChain(speciesId: number): Promise<EvolutionStage[]> {
-  const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${speciesId}`);
+export async function getEvolutionChain(
+  speciesId: number,
+): Promise<EvolutionStage[]> {
+  const speciesRes = await fetch(
+    `https://pokeapi.co/api/v2/pokemon-species/${speciesId}`,
+  );
   const speciesData = await speciesRes.json();
 
   const chainRes = await fetch(speciesData.evolution_chain.url);
@@ -47,11 +58,20 @@ export async function getEvolutionChain(speciesId: number): Promise<EvolutionSta
 
   const stages: EvolutionStage[] = [];
 
-  function walk(node: { species: { name: string; url: string }; evolution_details: { min_level: number | null }[]; evolves_to: typeof node[] }) {
-    const id = parseInt(node.species.url.split("/").filter(Boolean).pop()!, 10);
-    const minLevel = node.evolution_details?.[0]?.min_level ?? null;
+  function walk(node: {
+    species: { name: string; url: string };
+    evolution_details: { min_level: number | null }[];
+    evolves_to: (typeof node)[];
+  }) {
+    const id = parseInt(
+      node.species.url.split("/").filter(Boolean).pop() ?? "0",
+      10,
+    );
+    const minLevel = node.evolution_details[0]?.min_level ?? null;
     stages.push({ speciesId: id, name: node.species.name, minLevel });
-    for (const child of node.evolves_to) { walk(child); }
+    for (const child of node.evolves_to) {
+      walk(child);
+    }
   }
 
   walk(chainData.chain);
@@ -67,7 +87,9 @@ export const STARTER_IDS = [1, 4, 7];
 export async function preloadSprite(url: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.onload = () => resolve();
+    img.onload = () => {
+      resolve();
+    };
     img.onerror = reject;
     img.src = url;
   });

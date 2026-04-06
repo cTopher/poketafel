@@ -16,7 +16,7 @@
 .headerTitle {
   font-size: 0.8em;
   color: #f0f0e8;
-  text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
 }
 
 .backButton {
@@ -41,7 +41,7 @@
   border: 2px solid var(--gba-border);
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .pokemonCardSelected {

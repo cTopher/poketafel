@@ -30,14 +30,21 @@
 
 .actionButton:active {
   transform: translateY(1px);
-  box-shadow:
-    inset 1px 1px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.15);
 }
 
-.fight { color: #303030; }
-.pokemon { color: #303030; }
-.catch { color: #303030; }
-.run { color: #303030; }
+.fight {
+  color: #303030;
+}
+.pokemon {
+  color: #303030;
+}
+.catch {
+  color: #303030;
+}
+.run {
+  color: #303030;
+}
 
 .disabled {
   opacity: 0.3;

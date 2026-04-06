@@ -1,9 +1,24 @@
 import { useState, useCallback } from "react";
-import type { BattleState, BattleMode, OwnedPokemon, WildPokemon, DifficultyRow } from "@shared/types";
-import { createBattle, submitAnswer, attemptCatch, applyFreeDamage } from "../lib/battle-engine";
+import type {
+  BattleState,
+  BattleMode,
+  OwnedPokemon,
+  WildPokemon,
+  DifficultyRow,
+} from "@shared/types";
 import {
-  buildDifficultyMap, pickWeightedQuestion, calculateScoreDelta,
-  applyScoreDelta, generateChoices, type DifficultyMap,
+  createBattle,
+  submitAnswer,
+  attemptCatch,
+  applyFreeDamage,
+} from "../lib/battle-engine";
+import {
+  buildDifficultyMap,
+  pickWeightedQuestion,
+  calculateScoreDelta,
+  applyScoreDelta,
+  generateChoices,
+  type DifficultyMap,
 } from "../lib/difficulty";
 import { api } from "../lib/api-client";
 
@@ -11,11 +26,16 @@ interface UseBattleOptions {
   playerPokemon: OwnedPokemon;
   wildPokemon: WildPokemon;
   difficultyRows: DifficultyRow[];
-  onBattleEnd: () => void;
 }
 
-export function useBattle({ playerPokemon, wildPokemon, difficultyRows, onBattleEnd }: UseBattleOptions) {
-  const [difficultyMap] = useState<DifficultyMap>(() => buildDifficultyMap(difficultyRows));
+export function useBattle({
+  playerPokemon,
+  wildPokemon,
+  difficultyRows,
+}: UseBattleOptions) {
+  const [difficultyMap] = useState<DifficultyMap>(() =>
+    buildDifficultyMap(difficultyRows),
+  );
 
   const [battle, setBattle] = useState<BattleState>(() => {
     const firstQuestion = pickWeightedQuestion(difficultyMap, []);
@@ -23,48 +43,69 @@ export function useBattle({ playerPokemon, wildPokemon, difficultyRows, onBattle
   });
 
   const [choices, setChoices] = useState<number[]>(() =>
-    generateChoices(battle.currentQuestion.factorA, battle.currentQuestion.factorB)
+    generateChoices(
+      battle.currentQuestion.factorA,
+      battle.currentQuestion.factorB,
+    ),
   );
 
-  const [answerStart, setAnswerStart] = useState(Date.now());
+  const [answerStart, setAnswerStart] = useState(() => Date.now());
 
   const setMode = useCallback((mode: BattleMode) => {
     setBattle((s) => ({ ...s, mode }));
   }, []);
 
   const enterFight = useCallback(() => {
-    const ch = generateChoices(battle.currentQuestion.factorA, battle.currentQuestion.factorB);
+    const ch = generateChoices(
+      battle.currentQuestion.factorA,
+      battle.currentQuestion.factorB,
+    );
     setChoices(ch);
     setBattle((s) => ({ ...s, mode: "fight" }));
     setAnswerStart(Date.now());
   }, [battle.currentQuestion]);
 
   const enterCatch = useCallback(() => {
-    const ch = generateChoices(battle.currentQuestion.factorA, battle.currentQuestion.factorB);
+    const ch = generateChoices(
+      battle.currentQuestion.factorA,
+      battle.currentQuestion.factorB,
+    );
     setChoices(ch);
     setBattle((s) => ({ ...s, mode: "catch", catchMode: true }));
     setAnswerStart(Date.now());
   }, [battle.currentQuestion]);
 
   const handleAnswer = useCallback(
-    async (givenAnswer: number) => {
+    (givenAnswer: number) => {
       const timeMs = Date.now() - answerStart;
       const { currentQuestion } = battle;
-      const correct = givenAnswer === currentQuestion.factorA * currentQuestion.factorB;
+      const correct =
+        givenAnswer === currentQuestion.factorA * currentQuestion.factorB;
 
-      api.submitAnswer({
-        factor_a: currentQuestion.factorA,
-        factor_b: currentQuestion.factorB,
-        given_answer: givenAnswer,
-        time_ms: timeMs,
-      }).catch(() => {});
+      api
+        .submitAnswer({
+          factor_a: currentQuestion.factorA,
+          factor_b: currentQuestion.factorB,
+          given_answer: givenAnswer,
+          time_ms: timeMs,
+        })
+        .catch(() => {});
 
       const delta = calculateScoreDelta(correct, timeMs);
-      applyScoreDelta(difficultyMap, currentQuestion.factorA, currentQuestion.factorB, delta);
+      applyScoreDelta(
+        difficultyMap,
+        currentQuestion.factorA,
+        currentQuestion.factorB,
+        delta,
+      );
 
       const nextRetryQueue = correct
         ? battle.retryQueue.filter(
-            (q) => !(q.factorA === currentQuestion.factorA && q.factorB === currentQuestion.factorB)
+            (q) =>
+              !(
+                q.factorA === currentQuestion.factorA &&
+                q.factorB === currentQuestion.factorB
+              ),
           )
         : battle.retryQueue;
       const nextQuestion = pickWeightedQuestion(difficultyMap, nextRetryQueue);
@@ -78,7 +119,7 @@ export function useBattle({ playerPokemon, wildPokemon, difficultyRows, onBattle
 
       return newState;
     },
-    [battle, answerStart, difficultyMap]
+    [battle, answerStart, difficultyMap],
   );
 
   const handleCatch = useCallback(
@@ -92,7 +133,7 @@ export function useBattle({ playerPokemon, wildPokemon, difficultyRows, onBattle
 
       return newState;
     },
-    [battle, wildPokemon]
+    [battle, wildPokemon],
   );
 
   const handleSwitch = useCallback(() => {

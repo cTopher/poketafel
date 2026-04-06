@@ -8,13 +8,25 @@ interface ActionMenuProps {
   catchEnabled: boolean;
 }
 
-export function ActionMenu({ onFight, onPokemon, onCatch, onRun, catchEnabled }: ActionMenuProps) {
+export function ActionMenu({
+  onFight,
+  onPokemon,
+  onCatch,
+  onRun,
+  catchEnabled,
+}: ActionMenuProps) {
   return (
     <div className={styles.grid}>
-      <button className={`${styles.actionButton} ${styles.fight}`} onClick={onFight}>
+      <button
+        className={`${styles.actionButton} ${styles.fight}`}
+        onClick={onFight}
+      >
         FIGHT
       </button>
-      <button className={`${styles.actionButton} ${styles.pokemon}`} onClick={onPokemon}>
+      <button
+        className={`${styles.actionButton} ${styles.pokemon}`}
+        onClick={onPokemon}
+      >
         POKéMON
       </button>
       <button
@@ -24,7 +36,10 @@ export function ActionMenu({ onFight, onPokemon, onCatch, onRun, catchEnabled }:
       >
         CATCH
       </button>
-      <button className={`${styles.actionButton} ${styles.run}`} onClick={onRun}>
+      <button
+        className={`${styles.actionButton} ${styles.run}`}
+        onClick={onRun}
+      >
         RUN
       </button>
     </div>

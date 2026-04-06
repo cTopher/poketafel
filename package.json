@@ -1,17 +1,31 @@
 {
   "name": "poketafel",
   "private": true,
-  "workspaces": ["shared", "app", "functions"],
+  "workspaces": [
+    "shared",
+    "app",
+    "functions"
+  ],
   "scripts": {
     "dev": "concurrently \"npm run dev:app\" \"npm run dev:functions\"",
     "dev:app": "npm run dev --workspace=app",
     "dev:functions": "wrangler pages dev app/dist --port 8788",
     "build": "npm run build --workspace=app",
-    "typecheck": "tsc --noEmit --project app/tsconfig.json && tsc --noEmit --project functions/tsconfig.json"
+    "typecheck": "tsc --noEmit --project app/tsconfig.json && tsc --noEmit --project functions/tsconfig.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
-    "wrangler": "^4.14.0",
-    "typescript": "^5.8.3"
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "prettier": "^3.8.1",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.58.0",
+    "wrangler": "^4.14.0"
   }
 }

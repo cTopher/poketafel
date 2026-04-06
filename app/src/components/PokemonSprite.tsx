@@ -15,10 +15,17 @@ const animationClassMap: Record<string, string | undefined> = {
   entrance: styles.entrance,
 };
 
-export function PokemonSprite({ src, alt, size = 128, animation = "idle" }: PokemonSpriteProps) {
-  const [shaking, setShaking] = useState(false);
+export function PokemonSprite({
+  src,
+  alt,
+  size = 128,
+  animation = "idle",
+}: PokemonSpriteProps) {
+  const [shaking] = useState(false);
 
-  const animClass = shaking ? styles.shake : animationClassMap[animation] ?? "";
+  const animClass = shaking
+    ? styles.shake
+    : (animationClassMap[animation] ?? "");
 
   return (
     <img

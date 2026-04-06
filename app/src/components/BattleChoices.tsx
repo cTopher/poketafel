@@ -2,11 +2,15 @@ import styles from "./BattleChoices.module.css";
 
 interface BattleChoicesProps {
   choices: number[];
-  onAnswer: (answer: number) => void;
+  onAnswer: (answer: number) => void | Promise<void>;
   onBack?: () => void;
 }
 
-export function BattleChoices({ choices, onAnswer, onBack }: BattleChoicesProps) {
+export function BattleChoices({
+  choices,
+  onAnswer,
+  onBack,
+}: BattleChoicesProps) {
   return (
     <div className={styles.container}>
       <div className={styles.choicesGrid}>
@@ -14,7 +18,9 @@ export function BattleChoices({ choices, onAnswer, onBack }: BattleChoicesProps)
           <button
             key={i}
             className={styles.choiceButton}
-            onClick={() => onAnswer(choice)}
+            onClick={() => {
+              void onAnswer(choice);
+            }}
           >
             {choice}
           </button>

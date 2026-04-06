@@ -11,13 +11,25 @@ interface NamePlateProps {
   xpToNext?: number;
 }
 
-export function NamePlate({ name, level, currentHp, maxHp, side, xp, xpToNext }: NamePlateProps) {
+export function NamePlate({
+  name,
+  level,
+  currentHp,
+  maxHp,
+  side,
+  xp,
+  xpToNext,
+}: NamePlateProps) {
   const isPlayer = side === "player";
 
   return (
-    <div className={`${styles.plate} ${isPlayer ? styles.platePlayer : styles.plateEnemy}`}>
+    <div
+      className={`${styles.plate} ${isPlayer ? styles.platePlayer : styles.plateEnemy}`}
+    >
       <div className={styles.nameRow}>
-        <span className={`${styles.name} ${isPlayer ? styles.namePlayer : styles.nameEnemy}`}>
+        <span
+          className={`${styles.name} ${isPlayer ? styles.namePlayer : styles.nameEnemy}`}
+        >
           {name}
         </span>
         <span className={styles.level}>Lv{level}</span>

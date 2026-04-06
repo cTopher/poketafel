@@ -16,7 +16,9 @@ export function GbaFrame({ children }: { children: ReactNode }) {
     }
     updateScale();
     window.addEventListener("resize", updateScale);
-    return () => window.removeEventListener("resize", updateScale);
+    return () => {
+      window.removeEventListener("resize", updateScale);
+    };
   }, []);
 
   return (

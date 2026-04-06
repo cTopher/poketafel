@@ -42,12 +42,14 @@
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
-  box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.15);
 }
 
 .starterCardSelected {
   border-color: #f8d030;
-  box-shadow: 0 0 0 2px #f8d030, 2px 2px 0 rgba(0,0,0,0.15);
+  box-shadow:
+    0 0 0 2px #f8d030,
+    2px 2px 0 rgba(0, 0, 0, 0.15);
 }
 
 .starterSprite {

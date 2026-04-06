@@ -7,10 +7,14 @@ interface HpBarProps {
   showNumbers?: boolean;
 }
 
-export function HpBar({ current, max, width = 120, showNumbers = false }: HpBarProps) {
+export function HpBar({
+  current,
+  max,
+  width = 120,
+  showNumbers = false,
+}: HpBarProps) {
   const pct = Math.max(0, current / max);
-  const color =
-    pct > 0.5 ? "#6be048" : pct > 0.25 ? "#f8d030" : "#f04038";
+  const color = pct > 0.5 ? "#6be048" : pct > 0.25 ? "#f8d030" : "#f04038";
 
   return (
     <div className={styles.wrapper}>
@@ -25,7 +29,9 @@ export function HpBar({ current, max, width = 120, showNumbers = false }: HpBarP
       </div>
       {showNumbers && (
         <div className={styles.numbers}>
-          {current}<span className={styles.separator}>/</span>{max}
+          {current}
+          <span className={styles.separator}>/</span>
+          {max}
         </div>
       )}
     </div>

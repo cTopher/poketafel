@@ -1,4 +1,10 @@
-import type { BattleState, OwnedPokemon, WildPokemon, Question, TurnResult, BattleMode } from "@shared/types";
+import type {
+  BattleState,
+  OwnedPokemon,
+  WildPokemon,
+  Question,
+  TurnResult,
+} from "@shared/types";
 import {
   FLAT_DAMAGE,
   PLAYER_BASE_HP,
@@ -25,7 +31,7 @@ function getWildMaxHp(playerLevel: number): number {
 export function createBattle(
   playerPokemon: OwnedPokemon,
   wildPokemon: WildPokemon,
-  firstQuestion: Question
+  firstQuestion: Question,
 ): BattleState {
   const stats = getPlayerStats(playerPokemon.level);
   const wildMaxHp = getWildMaxHp(playerPokemon.level);
@@ -51,7 +57,7 @@ export function createBattle(
 export function submitAnswer(
   state: BattleState,
   givenAnswer: number,
-  nextQuestion: Question
+  nextQuestion: Question,
 ): BattleState {
   const { currentQuestion, playerPokemon } = state;
   const correctAnswer = currentQuestion.factorA * currentQuestion.factorB;
@@ -73,13 +79,19 @@ export function submitAnswer(
 
     // Remove from retry queue if it was a retry
     retryQueue = retryQueue.filter(
-      (q) => !(q.factorA === currentQuestion.factorA && q.factorB === currentQuestion.factorB)
+      (q) =>
+        !(
+          q.factorA === currentQuestion.factorA &&
+          q.factorB === currentQuestion.factorB
+        ),
     );
   } else {
     playerHp = Math.max(0, playerHp - FLAT_DAMAGE);
     // Add to retry queue (if not already there)
     const alreadyQueued = retryQueue.some(
-      (q) => q.factorA === currentQuestion.factorA && q.factorB === currentQuestion.factorB
+      (q) =>
+        q.factorA === currentQuestion.factorA &&
+        q.factorB === currentQuestion.factorB,
     );
     if (!alreadyQueued) {
       retryQueue = [...retryQueue, currentQuestion];
@@ -115,7 +127,10 @@ export function canThrowPokeball(wildHp: number, wildMaxHp: number): boolean {
   return wildHp > 0 && wildHp / wildMaxHp <= CATCH_HP_THRESHOLD;
 }
 
-export function attemptCatch(state: BattleState, givenAnswer: number): BattleState {
+export function attemptCatch(
+  state: BattleState,
+  givenAnswer: number,
+): BattleState {
   const { currentQuestion } = state;
   const correctAnswer = currentQuestion.factorA * currentQuestion.factorB;
   const correct = givenAnswer === correctAnswer;
@@ -138,7 +153,7 @@ export function attemptCatch(state: BattleState, givenAnswer: number): BattleSta
 
   // Catch failed — enemy free attack, return to menu
   const newPlayerHp = Math.max(0, state.playerHp - FLAT_DAMAGE);
-  const newStatus = newPlayerHp <= 0 ? "lost" as const : state.status;
+  const newStatus = newPlayerHp <= 0 ? ("lost" as const) : state.status;
 
   return {
     ...state,
@@ -158,7 +173,7 @@ export function attemptCatch(state: BattleState, givenAnswer: number): BattleSta
 
 export function applyFreeDamage(state: BattleState): BattleState {
   const newPlayerHp = Math.max(0, state.playerHp - FLAT_DAMAGE);
-  const newStatus = newPlayerHp <= 0 ? "lost" as const : state.status;
+  const newStatus = newPlayerHp <= 0 ? ("lost" as const) : state.status;
   return {
     ...state,
     playerHp: newPlayerHp,

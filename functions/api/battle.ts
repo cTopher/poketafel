@@ -1,6 +1,9 @@
 import { getDb, type Env } from "./_db";
 import { getTrainerId, unauthorized, json } from "./_auth";
-import type { SubmitAnswerRequest, SubmitAnswerResponse } from "../../shared/types";
+import type {
+  SubmitAnswerRequest,
+  SubmitAnswerResponse,
+} from "../../shared/types";
 import {
   DIFFICULTY_DEFAULT,
   DIFFICULTY_MIN,

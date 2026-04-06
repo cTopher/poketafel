@@ -6,7 +6,7 @@ export function getTrainerId(request: Request): number | null {
   try {
     const decoded = atob(token);
     const [idStr] = decoded.split(":");
-    const id = parseInt(idStr, 10);
+    const id = parseInt(idStr ?? "", 10);
     return isNaN(id) ? null : id;
   } catch {
     return null;

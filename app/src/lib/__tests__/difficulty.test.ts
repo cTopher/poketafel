@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { calculateScoreDelta, pickWeightedQuestion, buildDifficultyMap, generateChoices } from "../difficulty";
+import {
+  calculateScoreDelta,
+  pickWeightedQuestion,
+  buildDifficultyMap,
+  generateChoices,
+} from "../difficulty";
 import {
   DIFFICULTY_WRONG_DELTA,
   DIFFICULTY_SLOW_DELTA,
@@ -16,7 +21,9 @@ describe("calculateScoreDelta", () => {
   });
 
   it("returns small increase for correct but slow", () => {
-    expect(calculateScoreDelta(true, SLOW_THRESHOLD_MS + 1)).toBe(DIFFICULTY_SLOW_DELTA);
+    expect(calculateScoreDelta(true, SLOW_THRESHOLD_MS + 1)).toBe(
+      DIFFICULTY_SLOW_DELTA,
+    );
   });
 
   it("returns small decrease for correct moderate speed", () => {
@@ -25,7 +32,9 @@ describe("calculateScoreDelta", () => {
   });
 
   it("returns decrease for correct and fast", () => {
-    expect(calculateScoreDelta(true, FAST_THRESHOLD_MS - 1)).toBe(DIFFICULTY_FAST_DELTA);
+    expect(calculateScoreDelta(true, FAST_THRESHOLD_MS - 1)).toBe(
+      DIFFICULTY_FAST_DELTA,
+    );
   });
 });
 
@@ -38,7 +47,14 @@ describe("buildDifficultyMap", () => {
 
   it("uses stored scores when provided", () => {
     const map = buildDifficultyMap([
-      { id: 1, trainer_id: 1, factor_a: 7, factor_b: 8, score: 85, updated_at: "" },
+      {
+        id: 1,
+        trainer_id: 1,
+        factor_a: 7,
+        factor_b: 8,
+        score: 85,
+        updated_at: "",
+      },
     ]);
     expect(map.get("7x8")).toBe(85);
     expect(map.get("3x4")).toBe(DIFFICULTY_DEFAULT);

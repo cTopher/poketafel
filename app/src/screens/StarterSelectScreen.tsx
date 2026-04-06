@@ -20,7 +20,7 @@ export function StarterSelectScreen({ onSelect }: StarterSelectScreenProps) {
   const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
-    Promise.all(STARTER_IDS.map(getPokemon)).then(setStarters);
+    void Promise.all(STARTER_IDS.map(getPokemon)).then(setStarters);
   }, []);
 
   async function handleConfirm() {
@@ -30,11 +30,7 @@ export function StarterSelectScreen({ onSelect }: StarterSelectScreenProps) {
   }
 
   if (starters.length === 0) {
-    return (
-      <div className={styles.loadingStarters}>
-        LOADING POKéMON...
-      </div>
-    );
+    return <div className={styles.loadingStarters}>LOADING POKéMON...</div>;
   }
 
   return (
@@ -47,7 +43,9 @@ export function StarterSelectScreen({ onSelect }: StarterSelectScreenProps) {
         {starters.map((starter) => (
           <button
             key={starter.id}
-            onClick={() => setSelected(starter.id)}
+            onClick={() => {
+              setSelected(starter.id);
+            }}
             className={`${styles.starterCard} ${selected === starter.id ? styles.starterCardSelected : ""}`}
           >
             <img
@@ -55,12 +53,15 @@ export function StarterSelectScreen({ onSelect }: StarterSelectScreenProps) {
               alt={starter.name}
               className={styles.starterSprite}
             />
-            <span className={styles.starterName}>
-              {starter.name}
-            </span>
+            <span className={styles.starterName}>{starter.name}</span>
             <span
               className={styles.starterType}
-              style={{ color: (starter.types[0] ? typeColors[starter.types[0]] : undefined) ?? "#a0a0a0" }}
+              style={{
+                color:
+                  (starter.types[0]
+                    ? typeColors[starter.types[0]]
+                    : undefined) ?? "#a0a0a0",
+              }}
             >
               {starter.types.join(" / ")}
             </span>
@@ -69,7 +70,13 @@ export function StarterSelectScreen({ onSelect }: StarterSelectScreenProps) {
       </div>
 
       {selected !== null && (
-        <button className="gba-button" onClick={handleConfirm} disabled={confirming}>
+        <button
+          className="gba-button"
+          onClick={() => {
+            void handleConfirm();
+          }}
+          disabled={confirming}
+        >
           {confirming ? "CHOOSING..." : "I CHOOSE YOU!"}
         </button>
       )}

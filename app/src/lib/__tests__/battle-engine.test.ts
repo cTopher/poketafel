@@ -1,15 +1,32 @@
 import { describe, it, expect } from "vitest";
-import { createBattle, submitAnswer, canThrowPokeball, getPlayerStats, attemptCatch, applyFreeDamage } from "../battle-engine";
-import { FLAT_DAMAGE, CATCH_HP_THRESHOLD, PLAYER_BASE_HP, HP_PER_LEVEL } from "@shared/types";
+import {
+  createBattle,
+  submitAnswer,
+  canThrowPokeball,
+  getPlayerStats,
+  attemptCatch,
+  applyFreeDamage,
+} from "../battle-engine";
+import { FLAT_DAMAGE } from "@shared/types";
 import type { OwnedPokemon, WildPokemon, Question } from "@shared/types";
 
 const mockPlayer: OwnedPokemon = {
-  id: 1, trainer_id: 1, pokeapi_id: 4, nickname: null,
-  level: 5, xp: 0, is_active: true, caught_at: "",
+  id: 1,
+  trainer_id: 1,
+  pokeapi_id: 4,
+  nickname: null,
+  level: 5,
+  xp: 0,
+  is_active: true,
+  caught_at: "",
 };
 
 const mockWild: WildPokemon = {
-  pokeapiId: 16, name: "pidgey", spriteUrl: "", cryUrl: "", types: ["normal", "flying"],
+  pokeapiId: 16,
+  name: "pidgey",
+  spriteUrl: "",
+  cryUrl: "",
+  types: ["normal", "flying"],
 };
 
 const mockQuestion: Question = { factorA: 7, factorB: 8 };
@@ -34,15 +51,17 @@ describe("submitAnswer", () => {
     const battle = createBattle(mockPlayer, mockWild, mockQuestion);
     const next = { factorA: 3, factorB: 4 };
     const result = submitAnswer(battle, 56, next);
-    expect(result.turnResult!.correct).toBe(true);
-    expect(result.wildHp).toBe(battle.wildMaxHp - getPlayerStats(mockPlayer.level).damage);
+    expect(result.turnResult?.correct).toBe(true);
+    expect(result.wildHp).toBe(
+      battle.wildMaxHp - getPlayerStats(mockPlayer.level).damage,
+    );
   });
 
   it("deals damage to player on wrong answer and queues retry", () => {
     const battle = createBattle(mockPlayer, mockWild, mockQuestion);
     const next = { factorA: 3, factorB: 4 };
     const result = submitAnswer(battle, 99, next);
-    expect(result.turnResult!.correct).toBe(false);
+    expect(result.turnResult?.correct).toBe(false);
     expect(result.playerHp).toBeLessThan(battle.playerMaxHp);
     expect(result.retryQueue).toContainEqual(mockQuestion);
   });
@@ -101,7 +120,10 @@ describe("applyFreeDamage", () => {
   });
 
   it("sets status to lost when HP reaches 0", () => {
-    const state = { ...createBattle(mockPlayer, mockWild, mockQuestion), playerHp: 5 };
+    const state = {
+      ...createBattle(mockPlayer, mockWild, mockQuestion),
+      playerHp: 5,
+    };
     const after = applyFreeDamage(state);
     expect(after.playerHp).toBe(0);
     expect(after.status).toBe("lost");

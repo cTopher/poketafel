@@ -7,9 +7,15 @@ interface EvolutionCheck {
 }
 
 // Cache evolution chains so we don't re-fetch
-const chainCache = new Map<number, Awaited<ReturnType<typeof getEvolutionChain>>>();
+const chainCache = new Map<
+  number,
+  Awaited<ReturnType<typeof getEvolutionChain>>
+>();
 
-export async function checkEvolution(pokeapiId: number, newLevel: number): Promise<EvolutionCheck> {
+export async function checkEvolution(
+  pokeapiId: number,
+  newLevel: number,
+): Promise<EvolutionCheck> {
   let chain = chainCache.get(pokeapiId);
   if (!chain) {
     chain = await getEvolutionChain(pokeapiId);
@@ -25,8 +31,12 @@ export async function checkEvolution(pokeapiId: number, newLevel: number): Promi
     return { shouldEvolve: false, evolvesToId: null, evolvesToName: null };
   }
 
-  const nextStage = chain[currentIdx + 1]!;
-  if (nextStage && nextStage.minLevel !== null && newLevel >= nextStage.minLevel) {
+  const nextStage = chain[currentIdx + 1];
+  if (
+    nextStage !== undefined &&
+    nextStage.minLevel !== null &&
+    newLevel >= nextStage.minLevel
+  ) {
     return {
       shouldEvolve: true,
       evolvesToId: nextStage.speciesId,

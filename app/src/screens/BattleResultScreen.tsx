@@ -24,7 +24,12 @@ const outcomeText: Record<string, string> = {
   lost: "DEFEATED...",
 };
 
-export function BattleResultScreen({ result, playerPokemonInfo, caughtPokemonInfo, onContinue }: BattleResultScreenProps) {
+export function BattleResultScreen({
+  result,
+  playerPokemonInfo,
+  caughtPokemonInfo,
+  onContinue,
+}: BattleResultScreenProps) {
   const { playSfx } = useSound();
 
   useEffect(() => {
@@ -35,14 +40,24 @@ export function BattleResultScreen({ result, playerPokemonInfo, caughtPokemonInf
 
   return (
     <div className={styles.container}>
-      <h2 className={`${styles.outcomeTitle} ${outcomeColorMap[result.outcome]}`}>
+      <h2
+        className={`${styles.outcomeTitle} ${outcomeColorMap[result.outcome]}`}
+      >
         {outcomeText[result.outcome]}
       </h2>
 
       {result.outcome === "caught" && caughtPokemonInfo ? (
-        <PokemonSprite src={caughtPokemonInfo.spriteFront} alt={caughtPokemonInfo.name} size={96} />
+        <PokemonSprite
+          src={caughtPokemonInfo.spriteFront}
+          alt={caughtPokemonInfo.name}
+          size={96}
+        />
       ) : (
-        <PokemonSprite src={playerPokemonInfo.spriteFront} alt={playerPokemonInfo.name} size={96} />
+        <PokemonSprite
+          src={playerPokemonInfo.spriteFront}
+          alt={playerPokemonInfo.name}
+          size={96}
+        />
       )}
 
       <div className={`emerald-textbox ${styles.resultBox}`}>
@@ -72,14 +87,15 @@ export function BattleResultScreen({ result, playerPokemonInfo, caughtPokemonInf
           )}
 
           {result.outcome === "lost" && (
-            <p>
-              Better luck next time! Keep practicing!
-            </p>
+            <p>Better luck next time! Keep practicing!</p>
           )}
         </div>
       </div>
 
-      <button className={`gba-button ${styles.continueButton}`} onClick={onContinue}>
+      <button
+        className={`gba-button ${styles.continueButton}`}
+        onClick={onContinue}
+      >
         CONTINUE
       </button>
     </div>

@@ -4,7 +4,12 @@ import type { LoginRequest, LoginResponse, Trainer } from "../../shared/types";
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { name, favorite_num } = (await context.request.json()) as LoginRequest;
 
-  if (!name || typeof favorite_num !== "number" || favorite_num < 1 || favorite_num > 999) {
+  if (
+    !name ||
+    typeof favorite_num !== "number" ||
+    favorite_num < 1 ||
+    favorite_num > 999
+  ) {
     return new Response(JSON.stringify({ error: "Invalid name or number" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },

@@ -23,6 +23,7 @@
 ### Task 1: Install Dependencies
 
 **Files:**
+
 - Modify: `package.json`
 
 - [ ] **Step 1: Install ESLint and plugins**
@@ -52,6 +53,7 @@ git commit -m "chore: install eslint and prettier dependencies"
 ### Task 2: Configure ESLint
 
 **Files:**
+
 - Create: `eslint.config.js`
 
 - [ ] **Step 1: Create ESLint flat config**
@@ -102,6 +104,7 @@ export default tseslint.config(
 ```
 
 Key details:
+
 - `projectService: true` lets typescript-eslint automatically find the right tsconfig for each file.
 - `ignores` with `**/*.js` prevents ESLint from trying to type-check the config file itself.
 - React plugin only applies to `app/src/` files (functions/ has no React).
@@ -128,6 +131,7 @@ git commit -m "chore: add eslint flat config with strict type-checked rules"
 ### Task 3: Configure Prettier
 
 **Files:**
+
 - Create: `.prettierrc`
 - Create: `.prettierignore`
 
@@ -169,6 +173,7 @@ git commit -m "chore: add prettier config with defaults"
 ### Task 4: Add Scripts and Update CLAUDE.md
 
 **Files:**
+
 - Modify: `package.json`
 - Modify: `CLAUDE.md`
 
@@ -231,6 +236,7 @@ git commit -m "chore: add lint/format scripts and update CLAUDE.md"
 ### Task 5: Fix Existing Codebase
 
 **Files:**
+
 - Modify: All `app/src/**/*.{ts,tsx}` and `functions/**/*.ts` files as needed
 
 This is the one-time cleanup pass. Auto-fix what can be auto-fixed, then manually resolve remaining errors.
@@ -258,6 +264,7 @@ npm run lint 2>&1
 ```
 
 Review the output. For each remaining error, fix it manually. Common issues with `strict-type-checked`:
+
 - **`@typescript-eslint/no-floating-promises`** — Add `void` before fire-and-forget promises, or `await` them.
 - **`@typescript-eslint/no-unsafe-assignment`** / **`no-unsafe-member-access`** — Add type annotations to values coming from untyped sources.
 - **`@typescript-eslint/no-unnecessary-condition`** — Remove conditions that TypeScript already guarantees (e.g., checking a non-nullable value for null).

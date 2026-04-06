@@ -58,7 +58,6 @@
     1px 1px 0 rgba(0, 0, 0, 0.12);
 }
 
-
 .backButton:hover {
   background: linear-gradient(180deg, #e0d8a8 0%, #c8c098 100%);
   border-color: #404038;
