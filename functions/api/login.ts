@@ -18,10 +18,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const sql = getDb(context.env);
 
+  const normalizedName = name.trim().toLowerCase();
+
   const existing = await sql`
     SELECT id, name, favorite_num, created_at
     FROM trainers
-    WHERE name = ${name} AND favorite_num = ${favorite_num}
+    WHERE LOWER(name) = ${normalizedName} AND favorite_num = ${favorite_num}
   `;
 
   let trainer: Trainer;
@@ -31,7 +33,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   } else {
     const created = await sql`
       INSERT INTO trainers (name, favorite_num)
-      VALUES (${name}, ${favorite_num})
+      VALUES (${normalizedName}, ${favorite_num})
       RETURNING id, name, favorite_num, created_at
     `;
     trainer = created[0] as unknown as Trainer;
