@@ -1,7 +1,10 @@
 import { useState, useCallback } from "react";
-import type { BattleState, OwnedPokemon, WildPokemon, DifficultyRow } from "@shared/types";
-import { createBattle, submitAnswer, attemptCatch } from "../lib/battle-engine";
-import { buildDifficultyMap, pickWeightedQuestion, calculateScoreDelta, applyScoreDelta, type DifficultyMap } from "../lib/difficulty";
+import type { BattleState, BattleMode, OwnedPokemon, WildPokemon, DifficultyRow } from "@shared/types";
+import { createBattle, submitAnswer, attemptCatch, applyFreeDamage } from "../lib/battle-engine";
+import {
+  buildDifficultyMap, pickWeightedQuestion, calculateScoreDelta,
+  applyScoreDelta, generateChoices, type DifficultyMap,
+} from "../lib/difficulty";
 import { api } from "../lib/api-client";
 
 interface UseBattleOptions {
@@ -19,12 +22,29 @@ export function useBattle({ playerPokemon, wildPokemon, difficultyRows, onBattle
     return createBattle(playerPokemon, wildPokemon, firstQuestion);
   });
 
+  const [choices, setChoices] = useState<number[]>(() =>
+    generateChoices(battle.currentQuestion.factorA, battle.currentQuestion.factorB)
+  );
+
   const [answerStart, setAnswerStart] = useState(Date.now());
 
-  // Reset timer when question changes
-  const resetTimer = useCallback(() => {
-    setAnswerStart(Date.now());
+  const setMode = useCallback((mode: BattleMode) => {
+    setBattle((s) => ({ ...s, mode }));
   }, []);
+
+  const enterFight = useCallback(() => {
+    const ch = generateChoices(battle.currentQuestion.factorA, battle.currentQuestion.factorB);
+    setChoices(ch);
+    setBattle((s) => ({ ...s, mode: "fight" }));
+    setAnswerStart(Date.now());
+  }, [battle.currentQuestion]);
+
+  const enterCatch = useCallback(() => {
+    const ch = generateChoices(battle.currentQuestion.factorA, battle.currentQuestion.factorB);
+    setChoices(ch);
+    setBattle((s) => ({ ...s, mode: "catch", catchMode: true }));
+    setAnswerStart(Date.now());
+  }, [battle.currentQuestion]);
 
   const handleAnswer = useCallback(
     async (givenAnswer: number) => {
@@ -32,7 +52,6 @@ export function useBattle({ playerPokemon, wildPokemon, difficultyRows, onBattle
       const { currentQuestion } = battle;
       const correct = givenAnswer === currentQuestion.factorA * currentQuestion.factorB;
 
-      // Submit to API (fire and forget for responsiveness)
       api.submitAnswer({
         factor_a: currentQuestion.factorA,
         factor_b: currentQuestion.factorB,
@@ -40,11 +59,9 @@ export function useBattle({ playerPokemon, wildPokemon, difficultyRows, onBattle
         time_ms: timeMs,
       }).catch(() => {});
 
-      // Update local difficulty
       const delta = calculateScoreDelta(correct, timeMs);
       applyScoreDelta(difficultyMap, currentQuestion.factorA, currentQuestion.factorB, delta);
 
-      // Pick next question
       const nextRetryQueue = correct
         ? battle.retryQueue.filter(
             (q) => !(q.factorA === currentQuestion.factorA && q.factorB === currentQuestion.factorB)
@@ -54,6 +71,9 @@ export function useBattle({ playerPokemon, wildPokemon, difficultyRows, onBattle
 
       const newState = submitAnswer(battle, givenAnswer, nextQuestion);
       setBattle(newState);
+
+      // Generate new choices for the next question (stay in fight mode)
+      setChoices(generateChoices(nextQuestion.factorA, nextQuestion.factorB));
       setAnswerStart(Date.now());
 
       return newState;
@@ -75,14 +95,25 @@ export function useBattle({ playerPokemon, wildPokemon, difficultyRows, onBattle
     [battle, wildPokemon]
   );
 
-  const enterCatchMode = useCallback(() => {
-    setBattle((s) => ({ ...s, catchMode: true }));
+  const handleSwitch = useCallback(() => {
+    const newState = applyFreeDamage(battle);
+    setBattle(newState);
+    return newState;
+  }, [battle]);
+
+  const handleRun = useCallback(() => {
+    setBattle((s) => ({ ...s, status: "lost", xpGained: 0, mode: "menu" }));
   }, []);
 
   return {
     battle,
+    choices,
+    enterFight,
+    enterCatch,
+    setMode,
     handleAnswer,
     handleCatch,
-    enterCatchMode,
+    handleSwitch,
+    handleRun,
   };
 }
