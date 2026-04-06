@@ -2,7 +2,7 @@
 
 A Pokémon-inspired multiplication tables game for children, built with React, TypeScript, and Vite.
 
-🔗 **[Play it here](https://banaan.dev/poketafel)**
+🔗 **[Play it here](https://poketafel.pages.dev)**
 
 ## What is this?
 
