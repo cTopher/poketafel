@@ -119,7 +119,9 @@ export function App() {
           playerPokemon={activePokemon}
           playerPokemonInfo={playerPokemonInfo}
           difficultyRows={auth.difficulty}
+          collection={auth.collection}
           onEnd={handleBattleEnd}
+          onCollectionUpdate={auth.updateCollection}
         />
       )}
 
