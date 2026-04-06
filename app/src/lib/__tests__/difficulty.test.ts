@@ -1,42 +1,11 @@
 import { describe, it, expect } from "vitest";
 import {
-  calculateScoreDelta,
   pickWeightedQuestion,
   buildDifficultyMap,
   generateChoices,
+  setScore,
 } from "../difficulty";
-import {
-  DIFFICULTY_WRONG_DELTA,
-  DIFFICULTY_SLOW_DELTA,
-  DIFFICULTY_MODERATE_DELTA,
-  DIFFICULTY_FAST_DELTA,
-  FAST_THRESHOLD_MS,
-  SLOW_THRESHOLD_MS,
-  DIFFICULTY_DEFAULT,
-} from "@shared/types";
-
-describe("calculateScoreDelta", () => {
-  it("returns big increase for wrong answer", () => {
-    expect(calculateScoreDelta(false, 5000)).toBe(DIFFICULTY_WRONG_DELTA);
-  });
-
-  it("returns small increase for correct but slow", () => {
-    expect(calculateScoreDelta(true, SLOW_THRESHOLD_MS + 1)).toBe(
-      DIFFICULTY_SLOW_DELTA,
-    );
-  });
-
-  it("returns small decrease for correct moderate speed", () => {
-    const mid = Math.floor((FAST_THRESHOLD_MS + SLOW_THRESHOLD_MS) / 2);
-    expect(calculateScoreDelta(true, mid)).toBe(DIFFICULTY_MODERATE_DELTA);
-  });
-
-  it("returns decrease for correct and fast", () => {
-    expect(calculateScoreDelta(true, FAST_THRESHOLD_MS - 1)).toBe(
-      DIFFICULTY_FAST_DELTA,
-    );
-  });
-});
+import { DIFFICULTY_DEFAULT } from "@shared/types";
 
 describe("buildDifficultyMap", () => {
   it("returns default scores for all 100 multiplications when empty", () => {
@@ -58,6 +27,14 @@ describe("buildDifficultyMap", () => {
     ]);
     expect(map.get("7x8")).toBe(85);
     expect(map.get("3x4")).toBe(DIFFICULTY_DEFAULT);
+  });
+});
+
+describe("setScore", () => {
+  it("sets the score for a multiplication", () => {
+    const map = buildDifficultyMap([]);
+    setScore(map, 7, 8, 15);
+    expect(map.get("7x8")).toBe(15);
   });
 });
 
