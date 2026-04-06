@@ -22,7 +22,7 @@ export function BattleChoices({ choices, onAnswer, onBack }: BattleChoicesProps)
       </div>
       {onBack && (
         <button className={styles.backButton} onClick={onBack}>
-          BACK
+          &lt; BACK
         </button>
       )}
     </div>

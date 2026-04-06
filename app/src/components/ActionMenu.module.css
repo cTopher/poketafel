@@ -1,60 +1,50 @@
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2px 16px;
-  padding: 10px 16px;
+  gap: 6px;
+  padding: 10px;
   flex: 1;
   align-content: center;
 }
 
 .actionButton {
   font-family: "Press Start 2P", monospace;
-  font-size: 0.55em;
-  color: var(--gba-text);
-  background: transparent;
-  border: none;
-  padding: 8px 4px;
+  font-size: 0.5em;
+  color: #303030;
+  background: linear-gradient(180deg, #f8f0d8 0%, #e0d8b8 100%);
+  border: 2px solid #585848;
+  border-radius: 5px;
+  padding: 10px 8px;
   cursor: pointer;
-  text-align: left;
+  text-align: center;
+  transition: all 0.08s;
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 255, 255, 0.5),
+    1px 2px 0 rgba(0, 0, 0, 0.18);
 }
 
-.actionButton::before {
-  content: "";
-  display: inline-block;
-  width: 8px;
-  margin-right: 4px;
-}
-
-.actionButton:hover::before {
-  content: "▶";
-  font-size: 0.7em;
+.actionButton:hover {
+  background: linear-gradient(180deg, #e8d8a8 0%, #d0c898 100%);
+  border-color: #404038;
 }
 
 .actionButton:active {
-  transform: scale(0.96);
+  transform: translateY(1px);
+  box-shadow:
+    inset 1px 1px 2px rgba(0, 0, 0, 0.15);
 }
 
-.fight {
-  color: var(--gba-text);
-}
-
-.pokemon {
-  color: var(--gba-text);
-}
-
-.catch {
-  color: var(--gba-text);
-}
-
-.run {
-  color: var(--gba-text);
-}
+.fight { color: #303030; }
+.pokemon { color: #303030; }
+.catch { color: #303030; }
+.run { color: #303030; }
 
 .disabled {
-  opacity: 0.35;
+  opacity: 0.3;
   cursor: default;
 }
 
-.disabled:hover::before {
-  content: "";
+.disabled:hover {
+  background: linear-gradient(180deg, #f8f0d8 0%, #e0d8b8 100%);
+  border-color: #585848;
 }

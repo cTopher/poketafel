@@ -11,126 +11,146 @@
   justify-content: center;
   height: 100%;
   font-size: 0.7em;
-  color: #383838;
-  background: linear-gradient(180deg, #88c8e8 0%, #78b8d8 40%, #68a848 40%, #509038 100%);
+  color: #f8f8f0;
+  background: linear-gradient(180deg, #70b8e8 0%, #48a048 100%);
 }
 
-/* Battle arena background */
+/* ── Battle arena ── */
 .battleBg {
   position: relative;
   flex: 1;
   overflow: hidden;
-}
-
-.battleBg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, #88c8e8 0%, #78b8d8 38%, #68a848 38%, #509038 100%);
-}
-
-.battleBg::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 38%;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 8px,
-    rgba(255, 255, 255, 0.06) 8px,
-    rgba(255, 255, 255, 0.06) 10px
-  );
+  background: linear-gradient(180deg, #70b8e8 0%, #88c8a0 50%, #48a048 100%);
 }
 
 .enemyPlatform {
   position: absolute;
-  width: 180px;
-  height: 20px;
-  background: radial-gradient(ellipse, #509038 0%, #68a848 50%, transparent 70%);
+  width: 200px;
+  height: 24px;
+  background: radial-gradient(ellipse, #489038 0%, #60a048 40%, #78b860 60%, transparent 72%);
   border-radius: 50%;
-  right: 60px;
-  top: calc(38% - 10px);
+  right: 100px;
+  top: 42%;
 }
 
 .playerPlatform {
   position: absolute;
-  width: 240px;
-  height: 28px;
-  background: radial-gradient(ellipse, #407830 0%, #509038 50%, transparent 70%);
+  width: 260px;
+  height: 32px;
+  background: radial-gradient(ellipse, #387828 0%, #489038 35%, #60a048 55%, transparent 72%);
   border-radius: 50%;
-  left: 30px;
-  bottom: 18px;
+  left: 40px;
+  bottom: 10px;
 }
 
-/* Sprite & plate positions */
+/* ── Sprite & plate positions ── */
 .enemyPlatePos {
   position: absolute;
-  top: 16px;
+  top: 14px;
   left: 0;
   z-index: 2;
 }
 
+/* Center sprite over enemy platform (platform: right:100, width:200 → center at right:200) */
 .wildSpritePos {
   position: absolute;
-  right: 70px;
-  top: calc(38% - 120px);
+  right: 200px;
+  bottom: calc(58% - 8px);
+  transform: translateX(50%);
   z-index: 1;
+  filter: drop-shadow(2px 4px 0 rgba(0, 0, 0, 0.15));
 }
 
 .playerPlatePos {
   position: absolute;
-  bottom: 50px;
+  bottom: 48px;
   right: 0;
   z-index: 2;
 }
 
+/* Center sprite over player platform (platform: left:40, width:260 → center at left:170) */
 .playerSpritePos {
   position: absolute;
-  left: 50px;
-  bottom: 30px;
+  left: 170px;
+  bottom: 18px;
+  transform: translateX(-50%);
   z-index: 1;
+  filter: drop-shadow(2px 4px 0 rgba(0, 0, 0, 0.15));
 }
 
-/* Bottom panel — split left/right like Emerald */
+/* ── Bottom panel — Emerald split ── */
 .bottomPanel {
   display: flex;
-  min-height: 120px;
-  border-top: 4px solid #484848;
+  height: 128px;
+  border-top: 4px solid #303030;
+  background: #e0d8b8;
 }
 
+/* Left text area — teal with angled red accent */
 .bottomLeft {
   flex: 1;
-  background: var(--gba-teal);
-  border-left: 6px solid var(--gba-accent-red);
-  padding: 12px 16px;
+  position: relative;
+  background: linear-gradient(135deg, #5888a0 0%, #6898a8 40%, #78a8b0 100%);
+  padding: 14px 18px;
   display: flex;
   align-items: center;
+  overflow: hidden;
+}
+
+/* Red accent strip */
+.bottomLeft::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  background: linear-gradient(180deg, #d04030 0%, #b83028 100%);
+}
+
+/* Subtle noise texture */
+.bottomLeft::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.03) 2px,
+    rgba(255, 255, 255, 0.03) 4px
+  );
+  pointer-events: none;
 }
 
 .bottomLeftText {
   font-size: 0.6em;
   color: #f8f8f0;
   font-family: "Press Start 2P", monospace;
-  line-height: 1.8;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+  line-height: 2;
+  text-shadow:
+    1px 1px 0 rgba(0, 0, 0, 0.5),
+    2px 2px 0 rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
 }
 
 .wrongAnswer {
-  font-size: 0.5em;
-  color: #f8d030;
+  font-size: 0.45em;
+  color: #f8d848;
   font-family: "Press Start 2P", monospace;
-  margin-top: 4px;
+  margin-top: 6px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
+  position: relative;
+  z-index: 1;
 }
 
+/* Right actions panel — cream with inset border */
 .bottomRight {
-  width: 55%;
-  background: var(--gba-panel);
-  border: 3px solid #484848;
-  border-top: none;
-  border-right: none;
-  border-bottom: none;
+  width: 54%;
+  background: linear-gradient(180deg, #f8f0d8 0%, #e8e0c0 100%);
+  border-left: 4px solid #303030;
   display: flex;
+  position: relative;
+  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.4), inset -2px -2px 0 rgba(0, 0, 0, 0.08);
 }

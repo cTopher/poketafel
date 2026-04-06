@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 6px 10px;
+  padding: 8px;
   flex: 1;
 }
 
@@ -16,39 +16,56 @@
 .choiceButton {
   font-family: "Press Start 2P", monospace;
   font-size: 0.5em;
-  color: var(--gba-text);
-  background: var(--gba-panel);
-  border: 2px solid #484848;
+  color: #303030;
+  background: linear-gradient(180deg, #f8f0d8 0%, #e8e0c0 100%);
+  border: 2px solid #585848;
   border-radius: 4px;
-  padding: 6px 2px;
+  padding: 4px 2px;
   cursor: pointer;
   text-align: center;
-  transition: background 0.1s;
+  transition: all 0.08s;
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 255, 255, 0.5),
+    1px 1px 0 rgba(0, 0, 0, 0.12);
 }
 
 .choiceButton:hover {
-  background: #e8e0c0;
+  background: linear-gradient(180deg, #e8d8a8 0%, #d8c898 100%);
+  border-color: #404038;
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 255, 255, 0.3),
+    1px 1px 0 rgba(0, 0, 0, 0.15);
 }
 
 .choiceButton:active {
   transform: scale(0.96);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .backButton {
   font-family: "Press Start 2P", monospace;
   font-size: 0.35em;
-  color: #686868;
-  background: transparent;
-  border: none;
-  padding: 2px 4px;
+  color: #585048;
+  background: linear-gradient(180deg, #f0e8d0 0%, #d8d0b0 100%);
+  border: 2px solid #585848;
+  border-radius: 4px;
+  padding: 5px 4px;
   cursor: pointer;
-  align-self: flex-start;
+  text-align: center;
+  transition: all 0.08s;
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 255, 255, 0.5),
+    1px 1px 0 rgba(0, 0, 0, 0.12);
 }
 
-.backButton::before {
-  content: "◀ ";
-}
 
 .backButton:hover {
-  color: var(--gba-text);
+  background: linear-gradient(180deg, #e0d8a8 0%, #c8c098 100%);
+  border-color: #404038;
+  color: #303030;
+}
+
+.backButton:active {
+  transform: translateY(1px);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.15);
 }
