@@ -48,7 +48,7 @@ For a question `factorA x factorB` with correct answer `correct`:
 
 Same question + 6 multiple-choice format. One question only:
 - Correct answer: Pokemon is caught, battle ends
-- Wrong answer: return to action menu, battle continues
+- Wrong answer: enemy deals FLAT_DAMAGE (10) as a free attack, then return to action menu
 
 ### Pokemon Switching
 
