@@ -15,18 +15,6 @@ interface EvolutionStage {
 
 const cache = new Map<number, PokemonBasicInfo>();
 
-function spriteFrontUrl(id: number): string {
-  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${id}.gif`;
-}
-
-function spriteBackUrl(id: number): string {
-  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/${id}.gif`;
-}
-
-function cryUrl(id: number): string {
-  return `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
-}
-
 export async function getPokemon(id: number): Promise<PokemonBasicInfo> {
   const cached = cache.get(id);
   if (cached) return cached;
@@ -34,13 +22,16 @@ export async function getPokemon(id: number): Promise<PokemonBasicInfo> {
   const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
   const data = await res.json();
 
+  const bwAnimated = data.sprites?.versions?.["generation-v"]?.["black-white"]?.animated;
+  const showdown = data.sprites?.other?.showdown;
+
   const info: PokemonBasicInfo = {
     id: data.id,
     name: data.name,
     types: data.types.map((t: { type: { name: string } }) => t.type.name),
-    spriteFront: spriteFrontUrl(data.id),
-    spriteBack: spriteBackUrl(data.id),
-    cryUrl: cryUrl(data.id),
+    spriteFront: bwAnimated?.front_default || showdown?.front_default || data.sprites?.front_default,
+    spriteBack: bwAnimated?.back_default || showdown?.back_default || data.sprites?.back_default,
+    cryUrl: data.cries?.latest || data.cries?.legacy,
   };
 
   cache.set(id, info);
