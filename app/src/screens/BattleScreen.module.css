@@ -12,7 +12,7 @@
   height: 100%;
   font-size: 0.7em;
   color: #383838;
-  background: linear-gradient(180deg, #88c8e8 0%, #78b8d8 40%, #68a848 40%, #58983c 100%);
+  background: linear-gradient(180deg, #98d8a8 0%, #88c8a0 40%, #78b868 40%, #58983c 100%);
 }
 
 /* Battle arena background */
@@ -26,7 +26,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #88c8e8 0%, #78b8d8 38%, #68a848 38%, #509038 100%);
+  background: linear-gradient(180deg, #98d8a8 0%, #88c8a0 38%, #78b868 38%, #509038 100%);
 }
 
 .battleBg::after {
@@ -37,11 +37,11 @@
   top: 38%;
   bottom: 0;
   background: repeating-linear-gradient(
-    -60deg,
+    0deg,
     transparent,
-    transparent 18px,
-    rgba(255, 255, 255, 0.08) 18px,
-    rgba(255, 255, 255, 0.08) 20px
+    transparent 8px,
+    rgba(255, 255, 255, 0.06) 8px,
+    rgba(255, 255, 255, 0.06) 10px
   );
 }
 
@@ -94,21 +94,43 @@
   z-index: 1;
 }
 
-/* Bottom panel */
+/* Bottom panel — split left/right like Emerald */
 .bottomPanel {
-  background: linear-gradient(180deg, #a0a0a0 0%, #c8c8c0 3px, #f0f0e8 3px, #f0f0e8 100%);
-  border-top: 4px solid #585858;
-  padding: 0;
-  min-height: 120px;
   display: flex;
-  flex-direction: column;
+  min-height: 120px;
+  border-top: 4px solid #484848;
+}
+
+.bottomLeft {
+  flex: 1;
+  background: var(--gba-teal);
+  border-left: 6px solid var(--gba-accent-red);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+}
+
+.bottomLeftText {
+  font-size: 0.6em;
+  color: #f8f8f0;
+  font-family: "Press Start 2P", monospace;
+  line-height: 1.8;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
 }
 
 .wrongAnswer {
   font-size: 0.5em;
-  color: #c03028;
-  text-align: center;
-  padding: 6px 16px 0;
+  color: #f8d030;
   font-family: "Press Start 2P", monospace;
+  margin-top: 4px;
 }
 
+.bottomRight {
+  width: 55%;
+  background: var(--gba-panel);
+  border: 3px solid #484848;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  display: flex;
+}

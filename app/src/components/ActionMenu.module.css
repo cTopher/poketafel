@@ -1,26 +1,33 @@
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 12px 16px;
+  gap: 2px 16px;
+  padding: 10px 16px;
   flex: 1;
+  align-content: center;
 }
 
 .actionButton {
   font-family: "Press Start 2P", monospace;
   font-size: 0.55em;
-  color: #383838;
-  background: #f0f0e8;
-  border: 3px solid #585858;
-  border-radius: 6px;
-  padding: 12px 8px;
+  color: var(--gba-text);
+  background: transparent;
+  border: none;
+  padding: 8px 4px;
   cursor: pointer;
-  text-align: center;
-  transition: background 0.1s;
+  text-align: left;
 }
 
-.actionButton:hover {
-  background: #d8d8d0;
+.actionButton::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  margin-right: 4px;
+}
+
+.actionButton:hover::before {
+  content: "▶";
+  font-size: 0.7em;
 }
 
 .actionButton:active {
@@ -28,19 +35,19 @@
 }
 
 .fight {
-  color: #c03028;
+  color: var(--gba-text);
 }
 
 .pokemon {
-  color: #4888c8;
+  color: var(--gba-text);
 }
 
 .catch {
-  color: #f8b800;
+  color: var(--gba-text);
 }
 
 .run {
-  color: #585858;
+  color: var(--gba-text);
 }
 
 .disabled {
@@ -48,6 +55,6 @@
   cursor: default;
 }
 
-.disabled:hover {
-  background: #f0f0e8;
+.disabled:hover::before {
+  content: "";
 }

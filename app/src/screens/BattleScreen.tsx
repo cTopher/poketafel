@@ -216,41 +216,64 @@ function BattleActive({
         </div>
       </div>
 
-      {/* Bottom panel */}
+      {/* Bottom panel — Emerald split layout */}
       <div className={styles.bottomPanel}>
-        {/* Wrong answer feedback */}
-        {battle.turnResult && !battle.turnResult.correct && (
-          <div className={styles.wrongAnswer}>
-            {battle.turnResult.question.factorA} x {battle.turnResult.question.factorB} = {battle.turnResult.correctAnswer}
+        <div className={styles.bottomLeft}>
+          <div>
+            {battle.mode === "menu" && battle.status === "active" && (
+              <span className={styles.bottomLeftText}>
+                What will {playerPokemonInfo.name} do?
+              </span>
+            )}
+            {battle.mode === "fight" && battle.status === "active" && (
+              <>
+                <span className={styles.bottomLeftText}>
+                  {battle.currentQuestion.factorA} x {battle.currentQuestion.factorB} = ?
+                </span>
+                {battle.turnResult && !battle.turnResult.correct && (
+                  <div className={styles.wrongAnswer}>
+                    {battle.turnResult.question.factorA} x {battle.turnResult.question.factorB} = {battle.turnResult.correctAnswer}
+                  </div>
+                )}
+              </>
+            )}
+            {battle.mode === "catch" && battle.status === "active" && (
+              <>
+                <span className={styles.bottomLeftText}>
+                  {battle.currentQuestion.factorA} x {battle.currentQuestion.factorB} = ?
+                </span>
+                <div className={styles.wrongAnswer}>Catch it!</div>
+              </>
+            )}
           </div>
-        )}
+        </div>
 
-        {battle.mode === "menu" && battle.status === "active" && (
-          <ActionMenu
-            onFight={enterFight}
-            onPokemon={() => setMode("pokemon")}
-            onCatch={enterCatch}
-            onRun={onRunAction}
-            catchEnabled={battle.canCatch}
-          />
-        )}
+        <div className={styles.bottomRight}>
+          {battle.mode === "menu" && battle.status === "active" && (
+            <ActionMenu
+              onFight={enterFight}
+              onPokemon={() => setMode("pokemon")}
+              onCatch={enterCatch}
+              onRun={onRunAction}
+              catchEnabled={battle.canCatch}
+            />
+          )}
 
-        {battle.mode === "fight" && battle.status === "active" && (
-          <BattleChoices
-            question={battle.currentQuestion}
-            choices={choices}
-            onAnswer={onFightAnswer}
-            onBack={() => setMode("menu")}
-          />
-        )}
+          {battle.mode === "fight" && battle.status === "active" && (
+            <BattleChoices
+              choices={choices}
+              onAnswer={onFightAnswer}
+              onBack={() => setMode("menu")}
+            />
+          )}
 
-        {battle.mode === "catch" && battle.status === "active" && (
-          <BattleChoices
-            question={battle.currentQuestion}
-            choices={choices}
-            onAnswer={onCatchAnswer}
-          />
-        )}
+          {battle.mode === "catch" && battle.status === "active" && (
+            <BattleChoices
+              choices={choices}
+              onAnswer={onCatchAnswer}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
