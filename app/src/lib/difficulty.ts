@@ -69,3 +69,47 @@ export function pickWeightedQuestion(map: DifficultyMap, retryQueue: Question[])
   // Fallback (shouldn't happen)
   return { factorA: 5, factorB: 5 };
 }
+
+export function generateChoices(factorA: number, factorB: number): number[] {
+  const correct = factorA * factorB;
+  const candidates = new Set<number>();
+
+  // Nearby factor products
+  for (const da of [-1, 0, 1]) {
+    for (const db of [-1, 0, 1]) {
+      const a = factorA + da;
+      const b = factorB + db;
+      if (a >= 1 && b >= 1) {
+        candidates.add(a * b);
+      }
+    }
+  }
+
+  // Off-by-small from correct
+  for (const offset of [-2, -1, 1, 2]) {
+    if (correct + offset >= 1) {
+      candidates.add(correct + offset);
+    }
+  }
+
+  // Remove the correct answer from candidates
+  candidates.delete(correct);
+
+  // Convert to array and shuffle
+  let distractors = Array.from(candidates);
+
+  // Fill with random values if not enough
+  while (distractors.length < 5) {
+    const rand = Math.max(1, correct + Math.floor(Math.random() * 41) - 20);
+    if (rand !== correct && !distractors.includes(rand)) {
+      distractors.push(rand);
+    }
+  }
+
+  // Take 5 distractors, shuffled
+  distractors = distractors.sort(() => Math.random() - 0.5).slice(0, 5);
+
+  // Combine with correct answer and shuffle
+  const choices = [correct, ...distractors];
+  return choices.sort(() => Math.random() - 0.5);
+}

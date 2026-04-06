@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calculateScoreDelta, pickWeightedQuestion, buildDifficultyMap } from "../difficulty";
+import { calculateScoreDelta, pickWeightedQuestion, buildDifficultyMap, generateChoices } from "../difficulty";
 import {
   DIFFICULTY_WRONG_DELTA,
   DIFFICULTY_SLOW_DELTA,
@@ -60,5 +60,40 @@ describe("pickWeightedQuestion", () => {
     const retryQ = { factorA: 7, factorB: 8 };
     const q = pickWeightedQuestion(map, [retryQ]);
     expect(q).toEqual(retryQ);
+  });
+});
+
+describe("generateChoices", () => {
+  it("returns exactly 6 numbers", () => {
+    const choices = generateChoices(3, 4);
+    expect(choices).toHaveLength(6);
+  });
+
+  it("includes the correct answer", () => {
+    const choices = generateChoices(7, 8);
+    expect(choices).toContain(56);
+  });
+
+  it("has no duplicates", () => {
+    const choices = generateChoices(5, 6);
+    const unique = new Set(choices);
+    expect(unique.size).toBe(6);
+  });
+
+  it("all values are positive integers", () => {
+    const choices = generateChoices(1, 1);
+    for (const c of choices) {
+      expect(c).toBeGreaterThanOrEqual(1);
+      expect(Number.isInteger(c)).toBe(true);
+    }
+  });
+
+  it("generates plausible distractors near the correct answer", () => {
+    const choices = generateChoices(6, 7);
+    const correct = 42;
+    for (const c of choices) {
+      expect(c).toBeGreaterThanOrEqual(1);
+      expect(c).toBeLessThanOrEqual(correct + 30);
+    }
   });
 });
