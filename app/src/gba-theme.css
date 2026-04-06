@@ -26,7 +26,7 @@
   --gba-plate-bg: linear-gradient(180deg, #f0e8c8 0%, #d8d0b0 100%);
   --gba-textbox-bg: #f8f0d0;
   --gba-textbox-border: #484848;
-  --gba-screen-bg: #78a870;
+  --gba-screen-bg: linear-gradient(180deg, #1a2a6c 0%, #2a4a8c 50%, #3a6aac 100%);
   --gba-teal: #6898a0;
   --gba-accent-red: #c83830;
 }

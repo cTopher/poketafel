@@ -12,12 +12,19 @@
 .title {
   font-size: 1.4em;
   color: #f8d030;
-  text-shadow: 3px 3px 0 #504000;
+  -webkit-text-stroke: 2px #1a2a6c;
+  paint-order: stroke fill;
+  text-shadow:
+    2px 2px 0 #1a2a6c,
+    -1px -1px 0 #1a2a6c,
+    1px -1px 0 #1a2a6c,
+    -1px 1px 0 #1a2a6c,
+    3px 3px 0 rgba(0, 0, 0, 0.3);
 }
 
 .trainerName {
   font-size: 0.5em;
-  color: #383838;
+  color: #f0f0e8;
 }
 
 .pokemonPreview {
@@ -30,7 +37,7 @@
 .pokemonLabel {
   font-size: 0.5em;
   text-transform: uppercase;
-  color: #383838;
+  color: #f0f0e8;
 }
 
 .buttonGroup {

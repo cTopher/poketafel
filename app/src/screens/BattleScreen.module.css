@@ -12,7 +12,7 @@
   height: 100%;
   font-size: 0.7em;
   color: #383838;
-  background: linear-gradient(180deg, #98d8a8 0%, #88c8a0 40%, #78b868 40%, #58983c 100%);
+  background: linear-gradient(180deg, #88c8e8 0%, #78b8d8 40%, #68a848 40%, #509038 100%);
 }
 
 /* Battle arena background */
@@ -26,7 +26,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #98d8a8 0%, #88c8a0 38%, #78b868 38%, #509038 100%);
+  background: linear-gradient(180deg, #88c8e8 0%, #78b8d8 38%, #68a848 38%, #509038 100%);
 }
 
 .battleBg::after {

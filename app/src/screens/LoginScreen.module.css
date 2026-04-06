@@ -12,14 +12,21 @@
 .title {
   font-size: 2em;
   color: #f8d030;
-  text-shadow: 3px 3px 0 #504000, -1px -1px 0 #b88000;
   letter-spacing: 2px;
+  -webkit-text-stroke: 3px #1a2a6c;
+  paint-order: stroke fill;
+  text-shadow:
+    3px 3px 0 #1a2a6c,
+    -1px -1px 0 #1a2a6c,
+    1px -1px 0 #1a2a6c,
+    -1px 1px 0 #1a2a6c,
+    4px 4px 0 rgba(0, 0, 0, 0.3);
 }
 
 .subtitle {
   font-size: 0.5em;
   color: #f0e868;
-  text-shadow: 1px 1px 0 #504000;
+  text-shadow: 1px 1px 0 #1a2a6c;
 }
 
 .form {
