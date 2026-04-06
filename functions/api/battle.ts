@@ -4,16 +4,7 @@ import type {
   SubmitAnswerRequest,
   SubmitAnswerResponse,
 } from "../../shared/types";
-import {
-  DIFFICULTY_DEFAULT,
-  DIFFICULTY_MIN,
-  DIFFICULTY_WRONG_DELTA,
-  DIFFICULTY_SLOW_DELTA,
-  DIFFICULTY_MODERATE_DELTA,
-  DIFFICULTY_FAST_DELTA,
-  SLOW_THRESHOLD_MS,
-  FAST_THRESHOLD_MS,
-} from "../../shared/types";
+import { DIFFICULTY_DEFAULT } from "../../shared/types";
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const trainerId = getTrainerId(context.request);
@@ -31,28 +22,38 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     VALUES (${trainerId}, ${factor_a}, ${factor_b}, ${given_answer}, ${correct}, ${time_ms})
   `;
 
-  let delta: number;
-  if (!correct) {
-    delta = DIFFICULTY_WRONG_DELTA;
-  } else if (time_ms > SLOW_THRESHOLD_MS) {
-    delta = DIFFICULTY_SLOW_DELTA;
-  } else if (time_ms > FAST_THRESHOLD_MS) {
-    delta = DIFFICULTY_MODERATE_DELTA;
-  } else {
-    delta = DIFFICULTY_FAST_DELTA;
-  }
-
-  const result = await sql`
-    INSERT INTO difficulty (trainer_id, factor_a, factor_b, score, updated_at)
-    VALUES (${trainerId}, ${factor_a}, ${factor_b}, ${Math.max(DIFFICULTY_MIN, DIFFICULTY_DEFAULT + delta)}, NOW())
-    ON CONFLICT (trainer_id, factor_a, factor_b)
-    DO UPDATE SET
-      score = GREATEST(${DIFFICULTY_MIN}, difficulty.score + ${delta}),
-      updated_at = NOW()
-    RETURNING score
+  const scoreResult = await sql`
+    WITH recent AS (
+      SELECT correct, time_ms
+      FROM answers
+      WHERE trainer_id = ${trainerId}
+        AND factor_a = ${factor_a}
+        AND factor_b = ${factor_b}
+        AND created_at >= NOW() - INTERVAL '1 month'
+      ORDER BY created_at DESC
+      LIMIT 5
+    ),
+    scored AS (
+      SELECT
+        CASE
+          WHEN NOT correct THEN 30
+          ELSE LEAST(20, GREATEST(1, ROUND(time_ms / 1000.0)))
+        END AS score
+      FROM recent
+    )
+    SELECT ROUND(AVG(score))::int AS avg_score FROM scored
   `;
 
-  const newScore = result[0]?.score ?? DIFFICULTY_DEFAULT;
+  const newScore = scoreResult[0]?.avg_score ?? DIFFICULTY_DEFAULT;
+
+  await sql`
+    INSERT INTO difficulty (trainer_id, factor_a, factor_b, score, updated_at)
+    VALUES (${trainerId}, ${factor_a}, ${factor_b}, ${newScore}, NOW())
+    ON CONFLICT (trainer_id, factor_a, factor_b)
+    DO UPDATE SET
+      score = ${newScore},
+      updated_at = NOW()
+  `;
 
   const response: SubmitAnswerResponse = {
     correct,
