@@ -138,14 +138,7 @@ export interface BattleResult {
 
 // ── Difficulty constants ──
 
-export const DIFFICULTY_DEFAULT = 50;
-export const DIFFICULTY_MIN = 5;
-export const DIFFICULTY_WRONG_DELTA = 15;
-export const DIFFICULTY_SLOW_DELTA = 3;
-export const DIFFICULTY_MODERATE_DELTA = -1;
-export const DIFFICULTY_FAST_DELTA = -5;
-export const SLOW_THRESHOLD_MS = 10000;
-export const FAST_THRESHOLD_MS = 4000;
+export const DIFFICULTY_DEFAULT = 20;
 
 // ── Progression constants ──
 
