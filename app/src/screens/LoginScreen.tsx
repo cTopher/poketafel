@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import styles from "./LoginScreen.module.css";
 
 interface LoginScreenProps {
   onLogin: (name: string, favoriteNum: number) => Promise<void>;
@@ -22,58 +23,39 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
   }
 
   return (
-    <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      height: "100%", gap: 20, padding: 40,
-      background: "linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%)",
-    }}>
-      <h1 style={{
-        fontSize: "2em",
-        color: "#f8d030",
-        textShadow: "3px 3px 0 #504000, -1px -1px 0 #b88000",
-        letterSpacing: 2,
-      }}>
-        POKéTAFEL
-      </h1>
-      <p style={{
-        fontSize: "0.5em",
-        color: "#f0e868",
-        textShadow: "1px 1px 0 #504000",
-      }}>
-        Gotta Multiply &apos;Em All!
-      </p>
+    <div className={styles.container}>
+      <h1 className={styles.title}>POKéTAFEL</h1>
+      <p className={styles.subtitle}>Gotta Multiply &apos;Em All!</p>
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16, width: 360 }}>
-        <div className="emerald-textbox" style={{ padding: "16px 20px" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <label style={{ fontSize: "0.6em", color: "#383838" }}>
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={`emerald-textbox ${styles.formBox}`}>
+          <div className={styles.fields}>
+            <label className={styles.label}>
               YOUR NAME
               <input
-                className="gba-input"
+                className={`gba-input ${styles.labelInput}`}
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 maxLength={20}
                 autoFocus
-                style={{ marginTop: 6, display: "block" }}
               />
             </label>
-            <label style={{ fontSize: "0.6em", color: "#383838" }}>
+            <label className={styles.label}>
               FAVORITE NUMBER
               <input
-                className="gba-input"
+                className={`gba-input ${styles.labelInput}`}
                 type="number"
                 min={1}
                 max={999}
                 value={favoriteNum}
                 onChange={(e) => setFavoriteNum(e.target.value)}
-                style={{ marginTop: 6, display: "block" }}
               />
             </label>
           </div>
         </div>
-        {error && <p style={{ fontSize: "0.5em", color: "#e84040", textAlign: "center" }}>{error}</p>}
-        <button className="gba-button" type="submit" disabled={loading} style={{ alignSelf: "center", fontSize: "0.65em" }}>
+        {error && <p className={styles.error}>{error}</p>}
+        <button className={`gba-button ${styles.submitButton}`} type="submit" disabled={loading}>
           {loading ? "LOADING..." : "START!"}
         </button>
       </form>

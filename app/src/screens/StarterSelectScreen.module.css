@@ -1,0 +1,69 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 24px;
+  background: linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%);
+}
+
+.loadingStarters {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 0.7em;
+  color: #f8d030;
+  background: linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%);
+}
+
+.promptBox {
+  padding: 10px 20px;
+}
+
+.promptText {
+  text-align: center;
+}
+
+.starterGrid {
+  display: flex;
+  gap: 28px;
+}
+
+.starterCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px;
+  background: rgba(240, 240, 232, 0.08);
+  border: 3px solid #585858;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.starterCardSelected {
+  background: rgba(248, 208, 48, 0.2);
+  border-color: #f8d030;
+}
+
+.starterSprite {
+  width: 96px;
+  height: 96px;
+  image-rendering: pixelated;
+}
+
+.starterName {
+  font-size: 0.55em;
+  font-family: "Press Start 2P", monospace;
+  color: #f0f0e8;
+  text-transform: uppercase;
+}
+
+.starterType {
+  font-size: 0.4em;
+  font-family: "Press Start 2P", monospace;
+  text-transform: uppercase;
+}

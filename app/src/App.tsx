@@ -12,6 +12,7 @@ import { getPokemon, type PokemonBasicInfo } from "./lib/pokeapi";
 import { xpToNextLevel } from "@shared/types";
 import type { Screen, BattleResult, OwnedPokemon } from "@shared/types";
 import { checkEvolution } from "./lib/evolution";
+import styles from "./App.module.css";
 
 export function App() {
   const auth = useAuth();
@@ -22,14 +23,12 @@ export function App() {
 
   const activePokemon = auth.collection.find((p) => p.is_active) ?? auth.collection[0];
 
-  // Load active pokemon info
   useEffect(() => {
     if (activePokemon) {
       getPokemon(activePokemon.pokeapi_id).then(setPlayerPokemonInfo);
     }
   }, [activePokemon?.pokeapi_id]);
 
-  // Navigate after auth state changes
   useEffect(() => {
     if (auth.trainer && !auth.loading) {
       setScreen(auth.hasStarter ? "hub" : "starter-select");
@@ -39,9 +38,7 @@ export function App() {
   if (auth.loading) {
     return (
       <GbaFrame>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", fontSize: "0.8em", color: "var(--gba-gold)" }}>
-          LOADING...
-        </div>
+        <div className={styles.loading}>LOADING...</div>
       </GbaFrame>
     );
   }
@@ -55,7 +52,6 @@ export function App() {
   }
 
   async function handleBattleEnd(result: BattleResult) {
-    // Update pokemon XP/level on server
     if (activePokemon && result.outcome !== "lost") {
       const newXp = activePokemon.xp + result.xpGained;
       const needed = xpToNextLevel(activePokemon.level);
@@ -68,7 +64,6 @@ export function App() {
         level: leveledUp ? newLevel : undefined,
       });
 
-      // Check evolution
       if (leveledUp) {
         const evoCheck = await checkEvolution(activePokemon.pokeapi_id, newLevel);
         if (evoCheck.shouldEvolve && evoCheck.evolvesToId) {
@@ -83,7 +78,6 @@ export function App() {
       }
     }
 
-    // Load caught pokemon info for result screen
     if (result.caughtPokemon) {
       const info = await getPokemon(result.caughtPokemon.pokeapiId);
       setCaughtPokemonInfo(info);
@@ -91,7 +85,6 @@ export function App() {
 
     setBattleResult(result);
 
-    // Refresh collection
     const collection = await api.getCollection();
     auth.updateCollection(collection);
 

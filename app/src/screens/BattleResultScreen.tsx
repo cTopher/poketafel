@@ -3,6 +3,7 @@ import type { BattleResult } from "@shared/types";
 import { useSound } from "../hooks/useSound";
 import { PokemonSprite } from "../components/PokemonSprite";
 import type { PokemonBasicInfo } from "../lib/pokeapi";
+import styles from "./BattleResultScreen.module.css";
 
 interface BattleResultScreenProps {
   result: BattleResult;
@@ -10,6 +11,18 @@ interface BattleResultScreenProps {
   caughtPokemonInfo?: PokemonBasicInfo;
   onContinue: () => void;
 }
+
+const outcomeColorMap: Record<string, string | undefined> = {
+  won: styles.outcomeWon,
+  caught: styles.outcomeCaught,
+  lost: styles.outcomeLost,
+};
+
+const outcomeText: Record<string, string> = {
+  won: "VICTORY!",
+  caught: "GOT IT!",
+  lost: "DEFEATED...",
+};
 
 export function BattleResultScreen({ result, playerPokemonInfo, caughtPokemonInfo, onContinue }: BattleResultScreenProps) {
   const { playSfx } = useSound();
@@ -20,38 +33,9 @@ export function BattleResultScreen({ result, playerPokemonInfo, caughtPokemonInf
     }
   }, [result.outcome, playSfx]);
 
-  const outcomeColors: Record<string, string> = {
-    won: "#68a848",
-    caught: "#f8d030",
-    lost: "#e84040",
-  };
-
-  const outcomeText: Record<string, string> = {
-    won: "VICTORY!",
-    caught: "GOT IT!",
-    lost: "DEFEATED...",
-  };
-
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100%",
-        gap: 20,
-        background: "linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%)",
-        padding: 40,
-      }}
-    >
-      <h2
-        style={{
-          fontSize: "1.5em",
-          color: outcomeColors[result.outcome],
-          textShadow: "2px 2px 0 #103010",
-        }}
-      >
+    <div className={styles.container}>
+      <h2 className={`${styles.outcomeTitle} ${outcomeColorMap[result.outcome]}`}>
         {outcomeText[result.outcome]}
       </h2>
 
@@ -61,8 +45,8 @@ export function BattleResultScreen({ result, playerPokemonInfo, caughtPokemonInf
         <PokemonSprite src={playerPokemonInfo.spriteFront} alt={playerPokemonInfo.name} size={96} />
       )}
 
-      <div className="emerald-textbox" style={{ maxWidth: 400 }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, textAlign: "center" }}>
+      <div className={`emerald-textbox ${styles.resultBox}`}>
+        <div className={styles.resultContent}>
           {result.outcome !== "lost" && (
             <p>
               {playerPokemonInfo.name} gained {result.xpGained} XP!
@@ -70,19 +54,19 @@ export function BattleResultScreen({ result, playerPokemonInfo, caughtPokemonInf
           )}
 
           {result.leveledUp && (
-            <p style={{ color: "#4888c8" }}>
+            <p className={styles.levelUp}>
               {playerPokemonInfo.name} grew to Lv.{result.newLevel}!
             </p>
           )}
 
           {result.evolved && result.evolvedTo && (
-            <p style={{ color: "#a848a8" }}>
+            <p className={styles.evolving}>
               {playerPokemonInfo.name} is evolving...!
             </p>
           )}
 
           {result.outcome === "caught" && (
-            <p style={{ color: "#68a848" }}>
+            <p className={styles.caught}>
               {caughtPokemonInfo?.name ?? "Pokémon"} was caught!
             </p>
           )}
@@ -95,7 +79,7 @@ export function BattleResultScreen({ result, playerPokemonInfo, caughtPokemonInf
         </div>
       </div>
 
-      <button className="gba-button" onClick={onContinue} style={{ fontSize: "0.7em" }}>
+      <button className={`gba-button ${styles.continueButton}`} onClick={onContinue}>
         CONTINUE
       </button>
     </div>

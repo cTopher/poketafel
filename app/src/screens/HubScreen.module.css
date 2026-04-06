@@ -1,0 +1,54 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 20px;
+  background: linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%);
+  padding: 32px;
+}
+
+.title {
+  font-size: 1.4em;
+  color: #f8d030;
+  text-shadow: 3px 3px 0 #504000;
+}
+
+.trainerName {
+  font-size: 0.5em;
+  color: #a0d8a0;
+}
+
+.pokemonPreview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.pokemonLabel {
+  font-size: 0.5em;
+  text-transform: uppercase;
+  color: #f0f0e8;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 240px;
+}
+
+.battleButton {
+  width: 100%;
+  font-size: 0.65em;
+  padding: 14px 20px;
+  background: #e84040;
+  border: 3px solid #b83030;
+}
+
+.collectionButton {
+  width: 100%;
+  font-size: 0.65em;
+}

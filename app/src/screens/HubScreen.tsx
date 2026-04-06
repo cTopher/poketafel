@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { getPokemon, type PokemonBasicInfo } from "../lib/pokeapi";
 import { PokemonSprite } from "../components/PokemonSprite";
 import type { Screen } from "@shared/types";
+import styles from "./HubScreen.module.css";
 
 interface HubScreenProps {
   trainer: Trainer;
@@ -19,57 +20,33 @@ export function HubScreen({ trainer, activePokemon, collectionCount, onNavigate 
   }, [activePokemon.pokeapi_id]);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100%",
-        gap: 20,
-        background: "linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%)",
-        padding: 32,
-      }}
-    >
-      <h1
-        style={{
-          fontSize: "1.4em",
-          color: "#f8d030",
-          textShadow: "3px 3px 0 #504000",
-        }}
-      >
-        POKéTAFEL
-      </h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>POKéTAFEL</h1>
 
-      <p style={{ fontSize: "0.5em", color: "#a0d8a0" }}>
+      <p className={styles.trainerName}>
         Trainer {trainer.name}
       </p>
 
       {pokemonInfo && (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+        <div className={styles.pokemonPreview}>
           <PokemonSprite src={pokemonInfo.spriteFront} alt={pokemonInfo.name} size={96} />
-          <span style={{ fontSize: "0.5em", textTransform: "uppercase", color: "#f0f0e8" }}>
+          <span className={styles.pokemonLabel}>
             {pokemonInfo.name} Lv.{activePokemon.level}
           </span>
         </div>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 12, width: 240 }}>
+      <div className={styles.buttonGroup}>
         <button
-          className="gba-button"
+          className={`gba-button ${styles.battleButton}`}
           onClick={() => onNavigate("battle")}
-          style={{
-            width: "100%", fontSize: "0.65em", padding: "14px 20px",
-            background: "#e84040", border: "3px solid #b83030",
-          }}
         >
           BATTLE!
         </button>
 
         <button
-          className="gba-button"
+          className={`gba-button ${styles.collectionButton}`}
           onClick={() => onNavigate("collection")}
-          style={{ width: "100%", fontSize: "0.65em" }}
         >
           MY POKéMON ({collectionCount})
         </button>

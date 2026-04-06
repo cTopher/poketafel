@@ -1,0 +1,43 @@
+.form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  width: 100%;
+}
+
+.questionText {
+  font-size: 1.1em;
+  color: #383838;
+  font-family: "Press Start 2P", monospace;
+}
+
+.input {
+  width: 80px;
+  text-align: center;
+  font-size: 1em;
+  font-family: "Press Start 2P", monospace;
+  background: #fff;
+  color: #383838;
+  border: 3px solid #585858;
+  border-radius: 4px;
+  padding: 6px 8px;
+  outline: none;
+}
+
+.submitButton {
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.6em;
+  background: #4888c8;
+  color: #fff;
+  border: 3px solid #385888;
+  border-radius: 4px;
+  padding: 8px 14px;
+  cursor: pointer;
+  text-shadow: 1px 1px 0 #283858;
+}
+
+.submitButton:disabled {
+  cursor: default;
+  opacity: 0.5;
+}

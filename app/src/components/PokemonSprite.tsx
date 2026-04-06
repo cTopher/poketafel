@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styles from "./PokemonSprite.module.css";
 
 interface PokemonSpriteProps {
   src: string;
@@ -7,44 +8,24 @@ interface PokemonSpriteProps {
   animation?: "idle" | "attack" | "damage" | "faint" | "entrance" | "none";
 }
 
-const animationStyles: Record<string, React.CSSProperties> = {
-  idle: {},
-  attack: { transform: "translateX(20px)", filter: "brightness(2)" },
-  damage: { transform: "translateX(-10px)", filter: "brightness(0.5)" },
-  faint: { opacity: 0, transform: "translateY(20px)" },
-  entrance: { animation: "slideIn 0.5s ease-out" },
-  none: {},
+const animationClassMap: Record<string, string | undefined> = {
+  attack: styles.attack,
+  damage: styles.damage,
+  faint: styles.faint,
+  entrance: styles.entrance,
 };
 
 export function PokemonSprite({ src, alt, size = 128, animation = "idle" }: PokemonSpriteProps) {
   const [shaking, setShaking] = useState(false);
 
-  const style: React.CSSProperties = {
-    width: size,
-    height: size,
-    imageRendering: "pixelated",
-    transition: "all 0.3s ease-out",
-    ...(shaking
-      ? { animation: "shake 0.3s ease-in-out" }
-      : animationStyles[animation] ?? {}),
-  };
+  const animClass = shaking ? styles.shake : animationClassMap[animation] ?? "";
 
   return (
-    <>
-      <style>{`
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          20% { transform: translateX(-8px); }
-          40% { transform: translateX(8px); }
-          60% { transform: translateX(-4px); }
-          80% { transform: translateX(4px); }
-        }
-        @keyframes slideIn {
-          from { transform: translateX(100px); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-      `}</style>
-      <img src={src} alt={alt} style={style} />
-    </>
+    <img
+      src={src}
+      alt={alt}
+      className={`${styles.sprite} ${animClass}`}
+      style={{ width: size, height: size }}
+    />
   );
 }

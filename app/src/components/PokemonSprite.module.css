@@ -1,0 +1,40 @@
+.sprite {
+  image-rendering: pixelated;
+  transition: all 0.3s ease-out;
+}
+
+.attack {
+  transform: translateX(20px);
+  filter: brightness(2);
+}
+
+.damage {
+  transform: translateX(-10px);
+  filter: brightness(0.5);
+}
+
+.faint {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.entrance {
+  animation: slideIn 0.5s ease-out;
+}
+
+.shake {
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}

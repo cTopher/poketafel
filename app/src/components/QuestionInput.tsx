@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, type FormEvent } from "react";
 import type { Question } from "@shared/types";
+import styles from "./QuestionInput.module.css";
 
 interface QuestionInputProps {
   question: Question;
@@ -25,21 +26,8 @@ export function QuestionInput({ question, onSubmit, disabled = false }: Question
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        justifyContent: "center",
-        width: "100%",
-      }}
-    >
-      <span style={{
-        fontSize: "1.1em",
-        color: "#383838",
-        fontFamily: "'Press Start 2P', monospace",
-      }}>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <span className={styles.questionText}>
         {question.factorA} x {question.factorB} =
       </span>
       <input
@@ -49,34 +37,12 @@ export function QuestionInput({ question, onSubmit, disabled = false }: Question
         onChange={(e) => setValue(e.target.value)}
         disabled={disabled}
         autoFocus
-        style={{
-          width: 80,
-          textAlign: "center",
-          fontSize: "1em",
-          fontFamily: "'Press Start 2P', monospace",
-          background: "#fff",
-          color: "#383838",
-          border: "3px solid #585858",
-          borderRadius: 4,
-          padding: "6px 8px",
-          outline: "none",
-        }}
+        className={styles.input}
       />
       <button
         type="submit"
         disabled={disabled || value === ""}
-        style={{
-          fontFamily: "'Press Start 2P', monospace",
-          fontSize: "0.6em",
-          background: "#4888c8",
-          color: "#fff",
-          border: "3px solid #385888",
-          borderRadius: 4,
-          padding: "8px 14px",
-          cursor: disabled || value === "" ? "default" : "pointer",
-          opacity: disabled || value === "" ? 0.5 : 1,
-          textShadow: "1px 1px 0 #283858",
-        }}
+        className={styles.submitButton}
       >
         GO!
       </button>

@@ -1,0 +1,78 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%);
+  padding: 24px;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerTitle {
+  font-size: 0.8em;
+  color: #f8d030;
+  text-shadow: 2px 2px 0 #504000;
+}
+
+.backButton {
+  font-size: 0.5em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.pokemonCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  background: rgba(240, 240, 232, 0.04);
+  border: 2px solid #585858;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.pokemonCardSelected {
+  background: rgba(240, 240, 232, 0.1);
+}
+
+.pokemonCardActive {
+  background: rgba(248, 208, 48, 0.2);
+  border-color: #f8d030;
+}
+
+.pokemonName {
+  font-size: 0.35em;
+  text-transform: uppercase;
+  color: #f0f0e8;
+}
+
+.pokemonLevel {
+  font-size: 0.3em;
+  color: #a0d8a0;
+}
+
+.activeLabel {
+  font-size: 0.25em;
+  color: #f8d030;
+}
+
+.setActiveArea {
+  display: flex;
+  justify-content: center;
+}
+
+.setActiveButton {
+  font-size: 0.55em;
+}

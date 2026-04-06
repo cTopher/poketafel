@@ -8,6 +8,7 @@ import { NamePlate } from "../components/NamePlate";
 import { PokemonSprite } from "../components/PokemonSprite";
 import { QuestionInput } from "../components/QuestionInput";
 import type { WildPokemon } from "@shared/types";
+import styles from "./BattleScreen.module.css";
 
 interface BattleScreenProps {
   playerPokemon: OwnedPokemon;
@@ -38,11 +39,7 @@ export function BattleScreen({ playerPokemon, playerPokemonInfo, difficultyRows,
 
   if (!wildPokemon || !wildInfo) {
     return (
-      <div style={{
-        display: "flex", alignItems: "center", justifyContent: "center",
-        height: "100%", fontSize: "0.7em", color: "#383838",
-        background: "linear-gradient(180deg, #88c8e8 0%, #78b8d8 40%, #68a848 40%, #58983c 100%)",
-      }}>
+      <div className={styles.loadingBattle}>
         A wild POKéMON appears...
       </div>
     );
@@ -131,67 +128,15 @@ function BattleActive({
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", position: "relative" }}>
-      <style>{`
-        .battle-bg {
-          position: relative;
-          flex: 1;
-          overflow: hidden;
-        }
-        .battle-bg::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background:
-            linear-gradient(180deg,
-              #88c8e8 0%,
-              #78b8d8 38%,
-              #68a848 38%,
-              #509038 100%
-            );
-        }
-        .battle-bg::after {
-          content: '';
-          position: absolute;
-          left: 0; right: 0;
-          top: 38%;
-          bottom: 0;
-          background: repeating-linear-gradient(
-            -60deg,
-            transparent,
-            transparent 18px,
-            rgba(255,255,255,0.08) 18px,
-            rgba(255,255,255,0.08) 20px
-          );
-        }
-        .enemy-platform {
-          position: absolute;
-          width: 180px;
-          height: 20px;
-          background: radial-gradient(ellipse, #509038 0%, #68a848 50%, transparent 70%);
-          border-radius: 50%;
-          right: 60px;
-          top: calc(38% - 10px);
-        }
-        .player-platform {
-          position: absolute;
-          width: 240px;
-          height: 28px;
-          background: radial-gradient(ellipse, #407830 0%, #509038 50%, transparent 70%);
-          border-radius: 50%;
-          left: 30px;
-          bottom: 18px;
-        }
-      `}</style>
-
+    <div className={styles.wrapper}>
       {/* Battle arena */}
-      <div className="battle-bg">
+      <div className={styles.battleBg}>
         {/* Grass platforms */}
-        <div className="enemy-platform" />
-        <div className="player-platform" />
+        <div className={styles.enemyPlatform} />
+        <div className={styles.playerPlatform} />
 
         {/* Enemy name plate — top LEFT */}
-        <div style={{ position: "absolute", top: 16, left: 0, zIndex: 2 }}>
+        <div className={styles.enemyPlatePos}>
           <NamePlate
             name={wildPokemon.name}
             level={0}
@@ -202,12 +147,7 @@ function BattleActive({
         </div>
 
         {/* Wild Pokemon sprite — top RIGHT, on platform */}
-        <div style={{
-          position: "absolute",
-          right: 70,
-          top: "calc(38% - 120px)",
-          zIndex: 1,
-        }}>
+        <div className={styles.wildSpritePos}>
           <PokemonSprite
             src={wildInfo.spriteFront}
             alt={wildPokemon.name}
@@ -217,7 +157,7 @@ function BattleActive({
         </div>
 
         {/* Player name plate — bottom RIGHT */}
-        <div style={{ position: "absolute", bottom: 50, right: 0, zIndex: 2 }}>
+        <div className={styles.playerPlatePos}>
           <NamePlate
             name={playerPokemonInfo.name}
             level={playerPokemon.level}
@@ -228,12 +168,7 @@ function BattleActive({
         </div>
 
         {/* Player Pokemon sprite — bottom LEFT, on platform */}
-        <div style={{
-          position: "absolute",
-          left: 50,
-          bottom: 30,
-          zIndex: 1,
-        }}>
+        <div className={styles.playerSpritePos}>
           <PokemonSprite
             src={playerPokemonInfo.spriteBack}
             alt={playerPokemon.nickname ?? playerPokemonInfo.name}
@@ -245,20 +180,10 @@ function BattleActive({
         {/* Pokeball button overlay when catch available */}
         {battle.canCatch && !battle.catchMode && battle.status === "active" && (
           <button
-            className="gba-button"
+            className={`gba-button ${styles.pokeballButton}`}
             onClick={() => {
               playSfx("pokeball");
               enterCatchMode();
-            }}
-            style={{
-              position: "absolute",
-              right: 16,
-              bottom: 8,
-              fontSize: "0.45em",
-              background: "#e84040",
-              border: "3px solid #b83030",
-              padding: "6px 12px",
-              zIndex: 3,
             }}
           >
             POKéBALL!
@@ -267,29 +192,16 @@ function BattleActive({
       </div>
 
       {/* Bottom text box panel — Emerald style */}
-      <div style={{
-        background: "linear-gradient(180deg, #a0a0a0 0%, #c8c8c0 3px, #f0f0e8 3px, #f0f0e8 100%)",
-        borderTop: "4px solid #585858",
-        padding: 0,
-        minHeight: 120,
-        display: "flex",
-        flexDirection: "column",
-      }}>
+      <div className={styles.bottomPanel}>
         {/* Wrong answer feedback */}
         {battle.turnResult && !battle.turnResult.correct && (
-          <div style={{
-            fontSize: "0.5em",
-            color: "#c03028",
-            textAlign: "center",
-            padding: "6px 16px 0",
-            fontFamily: "'Press Start 2P', monospace",
-          }}>
+          <div className={styles.wrongAnswer}>
             {battle.turnResult.question.factorA} x {battle.turnResult.question.factorB} = {battle.turnResult.correctAnswer}
           </div>
         )}
 
         {battle.status === "active" && !battle.catchMode && (
-          <div style={{ padding: "10px 16px", flex: 1, display: "flex", alignItems: "center" }}>
+          <div className={styles.questionArea}>
             <QuestionInput
               question={battle.currentQuestion}
               onSubmit={onAnswer}
@@ -299,10 +211,8 @@ function BattleActive({
         )}
 
         {battle.catchMode && (
-          <div style={{ padding: "10px 16px", flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}>
-            <p style={{
-              fontSize: "0.5em", color: "#585858", fontFamily: "'Press Start 2P', monospace",
-            }}>
+          <div className={styles.catchArea}>
+            <p className={styles.catchPrompt}>
               Catch question! Get it right!
             </p>
             <QuestionInput question={battle.currentQuestion} onSubmit={onAnswer} />

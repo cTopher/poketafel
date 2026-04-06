@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import styles from "./GbaFrame.module.css";
 
 const BASE_WIDTH = 960;
 const BASE_HEIGHT = 540;
@@ -19,13 +20,11 @@ export function GbaFrame({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div ref={containerRef} style={{
-      width: BASE_WIDTH, height: BASE_HEIGHT,
-      transform: `scale(${scale})`, transformOrigin: "center center",
-      position: "relative", overflow: "hidden",
-      background: "linear-gradient(180deg, var(--gba-dark) 0%, var(--gba-bg) 100%)",
-      borderRadius: 8,
-    }}>
+    <div
+      ref={containerRef}
+      className={styles.container}
+      style={{ transform: `scale(${scale})` }}
+    >
       {children}
     </div>
   );

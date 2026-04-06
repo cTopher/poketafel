@@ -1,0 +1,9 @@
+.container {
+  width: 960px;
+  height: 540px;
+  transform-origin: center center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--gba-dark) 0%, var(--gba-bg) 100%);
+  border-radius: 8px;
+}

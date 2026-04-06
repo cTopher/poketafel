@@ -1,0 +1,54 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 20px;
+  background: linear-gradient(180deg, #286830 0%, #185028 40%, #103820 100%);
+  padding: 40px;
+}
+
+.outcomeTitle {
+  font-size: 1.5em;
+  text-shadow: 2px 2px 0 #103010;
+}
+
+.resultBox {
+  max-width: 400px;
+}
+
+.resultContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+.levelUp {
+  color: #4888c8;
+}
+
+.evolving {
+  color: #a848a8;
+}
+
+.caught {
+  color: #68a848;
+}
+
+.outcomeWon {
+  color: #68a848;
+}
+
+.outcomeCaught {
+  color: #f8d030;
+}
+
+.outcomeLost {
+  color: #e84040;
+}
+
+.continueButton {
+  font-size: 0.7em;
+}
