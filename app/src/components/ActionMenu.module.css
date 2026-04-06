@@ -1,0 +1,53 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 12px 16px;
+  flex: 1;
+}
+
+.actionButton {
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.55em;
+  color: #383838;
+  background: #f0f0e8;
+  border: 3px solid #585858;
+  border-radius: 6px;
+  padding: 12px 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.1s;
+}
+
+.actionButton:hover {
+  background: #d8d8d0;
+}
+
+.actionButton:active {
+  transform: scale(0.96);
+}
+
+.fight {
+  color: #c03028;
+}
+
+.pokemon {
+  color: #4888c8;
+}
+
+.catch {
+  color: #f8b800;
+}
+
+.run {
+  color: #585858;
+}
+
+.disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.disabled:hover {
+  background: #f0f0e8;
+}
