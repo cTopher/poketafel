@@ -5,7 +5,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const trainerId = url.searchParams.get("trainer");
 
   if (trainerId) {
-    return renderDetailPage(context.env, parseInt(trainerId, 10));
+    const parsed = parseInt(trainerId, 10);
+    if (Number.isNaN(parsed)) {
+      return new Response("Invalid trainer ID", { status: 400 });
+    }
+    return renderDetailPage(context.env, parsed);
   }
   return renderOverviewPage(context.env);
 };
@@ -70,6 +74,10 @@ async function renderOverviewPage(env: Env): Promise<Response> {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function renderDetailPage(_env: Env, _trainerId: number): Response {
   return new Response("Not implemented", { status: 404 });
+}
+
+function jsonForScript(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
 function escapeHtml(str: string): string {
@@ -187,7 +195,7 @@ function overviewHtml(
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pokétafel Admin</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 ${sharedStyles()}
 </head>
 <body>
@@ -227,7 +235,7 @@ ${sharedStyles()}
   </div>
 
   <script>
-    const dailyData = ${JSON.stringify(daily)};
+    const dailyData = ${jsonForScript(daily)};
     new Chart(document.getElementById('dailyChart'), {
       type: 'bar',
       data: {
