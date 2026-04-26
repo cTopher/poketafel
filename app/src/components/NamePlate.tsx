@@ -27,11 +27,7 @@ export function NamePlate({
       className={`${styles.plate} ${isPlayer ? styles.platePlayer : styles.plateEnemy}`}
     >
       <div className={styles.nameRow}>
-        <span
-          className={`${styles.name} ${isPlayer ? styles.namePlayer : styles.nameEnemy}`}
-        >
-          {name}
-        </span>
+        <span className={styles.name}>{name}</span>
         <span className={styles.level}>Lv{level}</span>
       </div>
 

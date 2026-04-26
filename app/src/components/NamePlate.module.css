@@ -34,14 +34,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.namePlayer {
-  max-width: 7.5em;
-}
-
-.nameEnemy {
-  max-width: 7em;
+  min-width: 0;
+  flex: 1;
 }
 
 .level {
