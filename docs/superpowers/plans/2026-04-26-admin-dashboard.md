@@ -23,6 +23,7 @@ That's it — one file. All HTML/CSS is generated inline via template literals.
 ### Task 1: Overview Page — Stats and Recent Players Table
 
 **Files:**
+
 - Create: `functions/admin.ts`
 
 - [ ] **Step 1: Create `functions/admin.ts` with the overview page**
@@ -45,20 +46,26 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 async function renderOverviewPage(env: Env): Promise<Response> {
   const sql = getDb(env);
 
-  const [totalTrainers, activeWeek, answersWeek, totalPokemon, dailyActivity, recentPlayers] =
-    await Promise.all([
-      sql`SELECT COUNT(*)::int AS count FROM trainers`,
-      sql`SELECT COUNT(DISTINCT trainer_id)::int AS count FROM answers WHERE created_at > NOW() - INTERVAL '7 days'`,
-      sql`SELECT COUNT(*)::int AS count FROM answers WHERE created_at > NOW() - INTERVAL '7 days'`,
-      sql`SELECT COUNT(*)::int AS count FROM pokemon_collection`,
-      sql`
+  const [
+    totalTrainers,
+    activeWeek,
+    answersWeek,
+    totalPokemon,
+    dailyActivity,
+    recentPlayers,
+  ] = await Promise.all([
+    sql`SELECT COUNT(*)::int AS count FROM trainers`,
+    sql`SELECT COUNT(DISTINCT trainer_id)::int AS count FROM answers WHERE created_at > NOW() - INTERVAL '7 days'`,
+    sql`SELECT COUNT(*)::int AS count FROM answers WHERE created_at > NOW() - INTERVAL '7 days'`,
+    sql`SELECT COUNT(*)::int AS count FROM pokemon_collection`,
+    sql`
         SELECT DATE(created_at) AS day, COUNT(*)::int AS count
         FROM answers
         WHERE created_at > NOW() - INTERVAL '30 days'
         GROUP BY DATE(created_at)
         ORDER BY day
       `,
-      sql`
+    sql`
         SELECT
           t.id, t.name,
           MAX(a.created_at) AS last_active,
@@ -71,7 +78,7 @@ async function renderOverviewPage(env: Env): Promise<Response> {
         ORDER BY MAX(a.created_at) DESC
         LIMIT 10
       `,
-    ]);
+  ]);
 
   const stats = {
     totalTrainers: totalTrainers[0]?.count ?? 0,
@@ -87,7 +94,10 @@ async function renderOverviewPage(env: Env): Promise<Response> {
 }
 
 // Placeholder for Task 2
-async function renderDetailPage(env: Env, trainerId: number): Promise<Response> {
+async function renderDetailPage(
+  env: Env,
+  trainerId: number,
+): Promise<Response> {
   return new Response("Not implemented", { status: 404 });
 }
 ```
@@ -231,7 +241,11 @@ function timeAgo(dateStr: string): string {
   return `${days}d ago`;
 }
 
-function statCard(label: string, value: number | string, extra?: string): string {
+function statCard(
+  label: string,
+  value: number | string,
+  extra?: string,
+): string {
   return `
     <div class="stat-card">
       <div class="label">${label}</div>
@@ -301,6 +315,7 @@ git commit -m "feat(admin): add overview page with stats, chart, and recent play
 ### Task 2: Player Detail Page
 
 **Files:**
+
 - Modify: `functions/admin.ts` — replace `renderDetailPage` placeholder, add `detailHtml`
 
 - [ ] **Step 1: Implement `renderDetailPage`**
@@ -308,7 +323,10 @@ git commit -m "feat(admin): add overview page with stats, chart, and recent play
 Replace the placeholder `renderDetailPage` function in `functions/admin.ts`:
 
 ```ts
-async function renderDetailPage(env: Env, trainerId: number): Promise<Response> {
+async function renderDetailPage(
+  env: Env,
+  trainerId: number,
+): Promise<Response> {
   const sql = getDb(env);
 
   const [trainerRows, statsRows, dailyRows, hardestRows, collectionRows] =
@@ -353,14 +371,29 @@ async function renderDetailPage(env: Env, trainerId: number): Promise<Response> 
     return new Response("Trainer not found", { status: 404 });
   }
 
-  const trainer = trainerRows[0] as { id: number; name: string; favorite_num: number; created_at: string };
-  const answerStats = (statsRows[0] as { total: number; correct: number; wrong: number }) ?? {
+  const trainer = trainerRows[0] as {
+    id: number;
+    name: string;
+    favorite_num: number;
+    created_at: string;
+  };
+  const answerStats = (statsRows[0] as {
+    total: number;
+    correct: number;
+    wrong: number;
+  }) ?? {
     total: 0,
     correct: 0,
     wrong: 0,
   };
 
-  const html = detailHtml(trainer, answerStats, dailyRows, hardestRows, collectionRows);
+  const html = detailHtml(
+    trainer,
+    answerStats,
+    dailyRows,
+    hardestRows,
+    collectionRows,
+  );
   return new Response(html, {
     headers: { "Content-Type": "text/html; charset=utf-8" },
   });
@@ -411,7 +444,8 @@ function detailHtml(
   hardest: HardestTable[],
   pokemon: PokemonRow[],
 ): string {
-  const correctPct = stats.total > 0 ? Math.round((100 * stats.correct) / stats.total) : 0;
+  const correctPct =
+    stats.total > 0 ? Math.round((100 * stats.correct) / stats.total) : 0;
   const wrongPct = stats.total > 0 ? 100 - correctPct : 0;
 
   const joinDate = new Date(trainer.created_at).toLocaleDateString("en-US", {
@@ -422,7 +456,8 @@ function detailHtml(
 
   const hardestRows = hardest
     .map((h) => {
-      const cls = h.accuracy < 50 ? "hard" : h.accuracy < 65 ? "medium" : "easy";
+      const cls =
+        h.accuracy < 50 ? "hard" : h.accuracy < 65 ? "medium" : "easy";
       return `
       <tr>
         <td>${h.factor_a} &times; ${h.factor_b}</td>
@@ -557,6 +592,7 @@ git commit -m "feat(admin): add player detail page with accuracy, hardest tables
 ### Task 3: Lint, Format, and Final Verification
 
 **Files:**
+
 - Modify: `functions/admin.ts` (if lint/format finds issues)
 
 - [ ] **Step 1: Run lint and format**

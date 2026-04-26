@@ -13,6 +13,7 @@ A single Cloudflare Pages Function at `functions/admin.ts` that:
 3. Uses Chart.js (loaded from CDN) for trend charts on the client side
 
 The function checks for a `trainer` query parameter:
+
 - **No param** → overview page
 - **`?trainer=<id>`** → player detail page
 
@@ -23,16 +24,19 @@ No new database tables. All data comes from existing `trainers`, `answers`, and 
 ### Overview Page (`/admin`)
 
 **Summary stat cards (top row):**
+
 - Total trainers — count from `trainers`
 - Active this week — distinct trainers with answers in the last 7 days
 - Answers this week — count from `answers` in the last 7 days
 - Total Pokémon caught — count from `pokemon_collection`
 
 **Daily activity chart:**
+
 - Bar chart showing answers per day over the last 30 days
 - Rendered with Chart.js
 
 **Recent players table:**
+
 - Last 10 active trainers (by most recent answer)
 - Columns: trainer name (clickable link to detail), last active, total answers, correct %, Pokémon count
 - Joined from `trainers`, `answers`, and `pokemon_collection`
@@ -41,27 +45,32 @@ No new database tables. All data comes from existing `trainers`, `answers`, and 
 ### Player Detail Page (`/admin?trainer=<id>`)
 
 **Header:**
+
 - Back link to `/admin`
 - Trainer name, join date, favorite number
 
 **Summary stat cards (top row):**
+
 - Total answers
 - Correct count (green) with percentage
 - Wrong count (red) with percentage
 - Pokémon caught
 
 **Daily activity chart:**
+
 - Stacked/grouped bar chart showing correct vs wrong answers per day over the last 30 days
 - Legend: green = correct, red = wrong
 
 **Two-column bottom section:**
 
 Left — **Hardest tables:**
+
 - Top 5 multiplication pairs with lowest accuracy
 - Columns: table (e.g. "7 × 8"), accuracy %, visual bar
 - Color-coded: red (<50%), amber (50-65%), green (>65%)
 
 Right — **Pokémon collection:**
+
 - All caught Pokémon displayed as pills/tags
 - Shows name and level
 - Active Pokémon highlighted with blue border
@@ -69,6 +78,7 @@ Right — **Pokémon collection:**
 ## Queries
 
 ### Overview stats
+
 ```sql
 -- Total trainers
 SELECT COUNT(*) FROM trainers;
@@ -86,6 +96,7 @@ SELECT COUNT(*) FROM pokemon_collection;
 ```
 
 ### Daily activity (last 30 days)
+
 ```sql
 SELECT DATE(created_at) AS day, COUNT(*) AS count
 FROM answers
@@ -95,6 +106,7 @@ ORDER BY day;
 ```
 
 ### Recent players
+
 ```sql
 SELECT
   t.id, t.name,
@@ -110,6 +122,7 @@ LIMIT 10;
 ```
 
 ### Player detail stats
+
 ```sql
 -- Basic stats
 SELECT
