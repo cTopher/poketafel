@@ -112,6 +112,7 @@ export interface WildPokemon {
   spriteUrl: string;
   cryUrl: string;
   types: string[];
+  level: number;
 }
 
 export interface Question {
@@ -142,16 +143,30 @@ export const DIFFICULTY_DEFAULT = 20;
 
 // ── Progression constants ──
 
-export const FLAT_DAMAGE = 10;
 export const PLAYER_BASE_HP = 50;
 export const HP_PER_LEVEL = 5;
+export const DAMAGE_BASE = 10;
 export const DAMAGE_PER_LEVEL = 1;
-export const XP_PER_CORRECT = 10;
-export const XP_PER_WIN = 30;
-export const WILD_HP_BASE = 50;
-export const WILD_HP_PER_PLAYER_LEVEL = 5;
+
+export const XP_PER_CORRECT = 5;
+export const XP_WIN_PER_LEVEL = 12;
+
 export const CATCH_HP_THRESHOLD = 0.25;
 
 export function xpToNextLevel(level: number): number {
-  return level * 25;
+  return 20 + 10 * level * level;
+}
+
+export function applyXp(
+  level: number,
+  xp: number,
+  gained: number,
+): { newLevel: number; newXp: number; leveledUp: boolean } {
+  let newLevel = level;
+  let newXp = xp + gained;
+  while (newXp >= xpToNextLevel(newLevel)) {
+    newXp -= xpToNextLevel(newLevel);
+    newLevel++;
+  }
+  return { newLevel, newXp, leveledUp: newLevel > level };
 }
