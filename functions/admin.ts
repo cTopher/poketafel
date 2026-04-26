@@ -70,10 +70,242 @@ async function renderOverviewPage(env: Env): Promise<Response> {
   });
 }
 
-// Placeholder for Task 2
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function renderDetailPage(_env: Env, _trainerId: number): Response {
-  return new Response("Not implemented", { status: 404 });
+async function renderDetailPage(
+  env: Env,
+  trainerId: number,
+): Promise<Response> {
+  const sql = getDb(env);
+
+  const [trainerRows, statsRows, dailyRows, hardestRows, collectionRows] =
+    await Promise.all([
+      sql`SELECT id, name, favorite_num, created_at FROM trainers WHERE id = ${trainerId}`,
+      sql`
+        SELECT
+          COUNT(*)::int AS total,
+          SUM(CASE WHEN correct THEN 1 ELSE 0 END)::int AS correct,
+          SUM(CASE WHEN NOT correct THEN 1 ELSE 0 END)::int AS wrong
+        FROM answers WHERE trainer_id = ${trainerId}
+      `,
+      sql`
+        SELECT
+          DATE(created_at) AS day,
+          SUM(CASE WHEN correct THEN 1 ELSE 0 END)::int AS correct,
+          SUM(CASE WHEN NOT correct THEN 1 ELSE 0 END)::int AS wrong
+        FROM answers
+        WHERE trainer_id = ${trainerId} AND created_at > NOW() - INTERVAL '30 days'
+        GROUP BY DATE(created_at)
+        ORDER BY day
+      `,
+      sql`
+        SELECT factor_a, factor_b,
+          ROUND(100.0 * SUM(CASE WHEN correct THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0))::int AS accuracy
+        FROM answers
+        WHERE trainer_id = ${trainerId}
+        GROUP BY factor_a, factor_b
+        HAVING COUNT(*) >= 3
+        ORDER BY accuracy ASC
+        LIMIT 5
+      `,
+      sql`
+        SELECT pokeapi_id, nickname, level, is_active
+        FROM pokemon_collection
+        WHERE trainer_id = ${trainerId}
+        ORDER BY caught_at
+      `,
+    ]);
+
+  if (trainerRows.length === 0) {
+    return new Response("Trainer not found", { status: 404 });
+  }
+
+  const trainer = trainerRows[0] as {
+    id: number;
+    name: string;
+    favorite_num: number;
+    created_at: string;
+  };
+  const answerStats = (statsRows[0] as
+    | { total: number; correct: number; wrong: number }
+    | undefined) ?? {
+    total: 0,
+    correct: 0,
+    wrong: 0,
+  };
+
+  const html = detailHtml(
+    trainer,
+    answerStats,
+    dailyRows as DailyDetail[],
+    hardestRows as HardestTable[],
+    collectionRows as PokemonRow[],
+  );
+  return new Response(html, {
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  });
+}
+
+interface TrainerInfo {
+  id: number;
+  name: string;
+  favorite_num: number;
+  created_at: string;
+}
+
+interface AnswerStats {
+  total: number;
+  correct: number;
+  wrong: number;
+}
+
+interface DailyDetail {
+  day: string;
+  correct: number;
+  wrong: number;
+}
+
+interface HardestTable {
+  factor_a: number;
+  factor_b: number;
+  accuracy: number;
+}
+
+interface PokemonRow {
+  pokeapi_id: number;
+  nickname: string | null;
+  level: number;
+  is_active: boolean;
+}
+
+function detailHtml(
+  trainer: TrainerInfo,
+  stats: AnswerStats,
+  daily: DailyDetail[],
+  hardest: HardestTable[],
+  pokemon: PokemonRow[],
+): string {
+  const correctPct =
+    stats.total > 0 ? Math.round((100 * stats.correct) / stats.total) : 0;
+  const wrongPct = stats.total > 0 ? 100 - correctPct : 0;
+
+  const joinDate = new Date(trainer.created_at).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  const hardestRows = hardest
+    .map((h) => {
+      const cls =
+        h.accuracy < 50 ? "hard" : h.accuracy < 65 ? "medium" : "easy";
+      return `
+      <tr>
+        <td>${h.factor_a} &times; ${h.factor_b}</td>
+        <td>${h.accuracy}%</td>
+        <td><div class="difficulty-bar"><div class="difficulty-fill ${cls}" style="width:${h.accuracy}%"></div></div></td>
+      </tr>`;
+    })
+    .join("");
+
+  const pokemonItems = pokemon
+    .map(
+      (p) =>
+        `<div class="pokemon-item${p.is_active ? " active" : ""}" data-pokeapi-id="${p.pokeapi_id}">${p.nickname ?? `<span class="pokemon-name" data-id="${p.pokeapi_id}">...</span>`} <span class="level">Lv.${p.level}</span></div>`,
+    )
+    .join("");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escapeHtml(trainer.name)} — Pokétafel Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+${sharedStyles()}
+</head>
+<body>
+  <a class="back-link" href="/admin">&larr; Back to overview</a>
+
+  <div class="header">
+    <div>
+      <h1>${escapeHtml(trainer.name)}</h1>
+      <div class="subtitle">Joined ${joinDate} · Favorite number: ${trainer.favorite_num}</div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    ${statCard("Total Answers", stats.total)}
+    ${statCard("Correct", stats.correct, `${correctPct}%`).replace('class="value"', 'class="value green"')}
+    ${statCard("Wrong", stats.wrong, `${wrongPct}%`).replace('class="value"', 'class="value red"')}
+    ${statCard("Pokémon Caught", pokemon.length)}
+  </div>
+
+  <div class="section">
+    <h2>Daily Activity (Last 30 Days)</h2>
+    <canvas id="dailyChart" height="80"></canvas>
+  </div>
+
+  <div class="two-col">
+    <div class="section">
+      <h2>Hardest Tables</h2>
+      ${
+        hardest.length > 0
+          ? `<table>
+        <thead><tr><th>Table</th><th>Accuracy</th><th></th></tr></thead>
+        <tbody>${hardestRows}</tbody>
+      </table>`
+          : "<p class='subtitle'>Not enough data yet</p>"
+      }
+    </div>
+    <div class="section">
+      <h2>Pokémon Collection</h2>
+      <div class="pokemon-grid">${pokemonItems || "<p class='subtitle'>No Pokémon yet</p>"}</div>
+    </div>
+  </div>
+
+  <script>
+    const dailyData = ${jsonForScript(daily)};
+    new Chart(document.getElementById('dailyChart'), {
+      type: 'bar',
+      data: {
+        labels: dailyData.map(d => d.day),
+        datasets: [
+          {
+            label: 'Correct',
+            data: dailyData.map(d => d.correct),
+            backgroundColor: 'rgba(34, 197, 94, 0.7)',
+            borderRadius: 4,
+          },
+          {
+            label: 'Wrong',
+            data: dailyData.map(d => d.wrong),
+            backgroundColor: 'rgba(239, 68, 68, 0.7)',
+            borderRadius: 4,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { stacked: true, grid: { display: false } },
+          y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } }
+        }
+      }
+    });
+
+    // Resolve pokemon names from PokeAPI
+    document.querySelectorAll('.pokemon-name[data-id]').forEach(async (el) => {
+      const id = el.getAttribute('data-id');
+      try {
+        const res = await fetch('https://pokeapi.co/api/v2/pokemon/' + id);
+        const data = await res.json();
+        el.textContent = data.name;
+      } catch {
+        el.textContent = 'pokemon #' + id;
+      }
+    });
+  </script>
+</body>
+</html>`;
 }
 
 function jsonForScript(data: unknown): string {
