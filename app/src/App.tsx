@@ -105,7 +105,10 @@ export function App() {
       {screen === "starter-select" && (
         <StarterSelectScreen
           onSelect={async (pokeapiId) => {
-            const caught = await api.catchPokemon({ pokeapi_id: pokeapiId });
+            const caught = await api.catchPokemon({
+              pokeapi_id: pokeapiId,
+              level: 5,
+            });
             await api.updatePokemon({
               pokemon_id: caught.id,
               set_active: true,
