@@ -6,26 +6,32 @@ import type {
   TurnResult,
 } from "@shared/types";
 import {
-  FLAT_DAMAGE,
   PLAYER_BASE_HP,
   HP_PER_LEVEL,
+  DAMAGE_BASE,
   DAMAGE_PER_LEVEL,
-  WILD_HP_BASE,
-  WILD_HP_PER_PLAYER_LEVEL,
   CATCH_HP_THRESHOLD,
   XP_PER_CORRECT,
-  XP_PER_WIN,
+  XP_WIN_PER_LEVEL,
 } from "@shared/types";
 
 export function getPlayerStats(level: number) {
   return {
     maxHp: PLAYER_BASE_HP + HP_PER_LEVEL * (level - 1),
-    damage: FLAT_DAMAGE + DAMAGE_PER_LEVEL * (level - 1),
+    damage: DAMAGE_BASE + DAMAGE_PER_LEVEL * (level - 1),
   };
 }
 
-function getWildMaxHp(playerLevel: number): number {
-  return WILD_HP_BASE + WILD_HP_PER_PLAYER_LEVEL * (playerLevel - 1);
+export function getWildStats(level: number) {
+  return {
+    maxHp: PLAYER_BASE_HP + HP_PER_LEVEL * (level - 1),
+    damage: DAMAGE_BASE + DAMAGE_PER_LEVEL * (level - 1),
+  };
+}
+
+export function pickWildLevel(playerLevel: number): number {
+  const offset = Math.floor(Math.random() * 5) - 2; // -2..2 inclusive
+  return Math.max(1, playerLevel + offset);
 }
 
 export function createBattle(

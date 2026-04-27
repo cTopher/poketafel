@@ -6,6 +6,8 @@ import {
   getPlayerStats,
   attemptCatch,
   applyFreeDamage,
+  getWildStats,
+  pickWildLevel,
 } from "../battle-engine";
 import { FLAT_DAMAGE } from "@shared/types";
 import type { OwnedPokemon, WildPokemon, Question } from "@shared/types";
@@ -128,5 +130,41 @@ describe("applyFreeDamage", () => {
     expect(after.playerHp).toBe(0);
     expect(after.status).toBe("lost");
     expect(after.xpGained).toBe(0);
+  });
+});
+
+describe("getWildStats", () => {
+  it("returns base stats at level 1", () => {
+    expect(getWildStats(1)).toEqual({ maxHp: 50, damage: 10 });
+  });
+
+  it("scales HP by 5 and damage by 1 per level", () => {
+    expect(getWildStats(5)).toEqual({ maxHp: 70, damage: 14 });
+    expect(getWildStats(10)).toEqual({ maxHp: 95, damage: 19 });
+  });
+});
+
+describe("pickWildLevel", () => {
+  it("stays within ±2 of player level", () => {
+    for (let i = 0; i < 100; i++) {
+      const level = pickWildLevel(10);
+      expect(level).toBeGreaterThanOrEqual(8);
+      expect(level).toBeLessThanOrEqual(12);
+    }
+  });
+
+  it("clamps to minimum 1", () => {
+    for (let i = 0; i < 100; i++) {
+      const level = pickWildLevel(1);
+      expect(level).toBeGreaterThanOrEqual(1);
+      expect(level).toBeLessThanOrEqual(3);
+    }
+  });
+
+  it("returns integer levels", () => {
+    for (let i = 0; i < 50; i++) {
+      const level = pickWildLevel(5);
+      expect(Number.isInteger(level)).toBe(true);
+    }
   });
 });
