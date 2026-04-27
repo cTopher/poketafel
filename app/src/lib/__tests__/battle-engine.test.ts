@@ -9,7 +9,7 @@ import {
   getWildStats,
   pickWildLevel,
 } from "../battle-engine";
-import { FLAT_DAMAGE } from "@shared/types";
+import { XP_PER_CORRECT, XP_WIN_PER_LEVEL } from "@shared/types";
 import type { OwnedPokemon, WildPokemon, Question } from "@shared/types";
 
 const mockPlayer: OwnedPokemon = {
@@ -29,6 +29,7 @@ const mockWild: WildPokemon = {
   spriteUrl: "",
   cryUrl: "",
   types: ["normal", "flying"],
+  level: 5,
 };
 
 const mockQuestion: Question = { factorA: 7, factorB: 8 };
@@ -42,6 +43,16 @@ describe("createBattle", () => {
     expect(battle.currentQuestion).toEqual(mockQuestion);
   });
 
+  it("uses player level for player HP", () => {
+    const battle = createBattle(mockPlayer, mockWild, mockQuestion);
+    expect(battle.playerMaxHp).toBe(getPlayerStats(mockPlayer.level).maxHp);
+  });
+
+  it("uses wild level for wild HP", () => {
+    const battle = createBattle(mockPlayer, mockWild, mockQuestion);
+    expect(battle.wildMaxHp).toBe(getWildStats(mockWild.level).maxHp);
+  });
+
   it("initializes with mode 'menu'", () => {
     const state = createBattle(mockPlayer, mockWild, mockQuestion);
     expect(state.mode).toBe("menu");
@@ -49,7 +60,7 @@ describe("createBattle", () => {
 });
 
 describe("submitAnswer", () => {
-  it("deals damage to wild pokemon on correct answer", () => {
+  it("deals player damage to wild on correct answer", () => {
     const battle = createBattle(mockPlayer, mockWild, mockQuestion);
     const next = { factorA: 3, factorB: 4 };
     const result = submitAnswer(battle, 56, next);
@@ -59,30 +70,54 @@ describe("submitAnswer", () => {
     );
   });
 
-  it("deals damage to player on wrong answer and queues retry", () => {
+  it("awards XP_PER_CORRECT on a correct hit", () => {
+    const battle = createBattle(mockPlayer, mockWild, mockQuestion);
+    const next = { factorA: 3, factorB: 4 };
+    const result = submitAnswer(battle, 56, next);
+    expect(result.xpGained).toBe(XP_PER_CORRECT);
+  });
+
+  it("deals wild damage to player on wrong answer", () => {
     const battle = createBattle(mockPlayer, mockWild, mockQuestion);
     const next = { factorA: 3, factorB: 4 };
     const result = submitAnswer(battle, 99, next);
     expect(result.turnResult?.correct).toBe(false);
-    expect(result.playerHp).toBeLessThan(battle.playerMaxHp);
+    expect(result.playerHp).toBe(
+      battle.playerMaxHp - getWildStats(mockWild.level).damage,
+    );
     expect(result.retryQueue).toContainEqual(mockQuestion);
   });
 
-  it("sets status to won when wild hp reaches 0", () => {
+  it("awards XP_PER_CORRECT plus XP_WIN_PER_LEVEL × wild.level on win", () => {
     let battle = createBattle(mockPlayer, mockWild, mockQuestion);
-    const stats = getPlayerStats(mockPlayer.level);
-    battle = { ...battle, wildHp: stats.damage };
+    const playerStats = getPlayerStats(mockPlayer.level);
+    battle = { ...battle, wildHp: playerStats.damage };
     const next = { factorA: 3, factorB: 4 };
     const result = submitAnswer(battle, 56, next);
     expect(result.status).toBe("won");
+    expect(result.xpGained).toBe(
+      XP_PER_CORRECT + XP_WIN_PER_LEVEL * mockWild.level,
+    );
+  });
+
+  it("scales win bonus by wild level", () => {
+    const lvl10Wild: WildPokemon = { ...mockWild, level: 10 };
+    let battle = createBattle(mockPlayer, lvl10Wild, mockQuestion);
+    const playerStats = getPlayerStats(mockPlayer.level);
+    battle = { ...battle, wildHp: playerStats.damage };
+    const next = { factorA: 3, factorB: 4 };
+    const result = submitAnswer(battle, 56, next);
+    expect(result.xpGained).toBe(XP_PER_CORRECT + XP_WIN_PER_LEVEL * 10);
   });
 
   it("sets status to lost when player hp reaches 0", () => {
+    const wildDamage = getWildStats(mockWild.level).damage;
     let battle = createBattle(mockPlayer, mockWild, mockQuestion);
-    battle = { ...battle, playerHp: FLAT_DAMAGE };
+    battle = { ...battle, playerHp: wildDamage };
     const next = { factorA: 3, factorB: 4 };
     const result = submitAnswer(battle, 99, next);
     expect(result.status).toBe("lost");
+    expect(result.xpGained).toBe(0);
   });
 });
 
@@ -97,27 +132,28 @@ describe("canThrowPokeball", () => {
 });
 
 describe("attemptCatch", () => {
-  it("deals FLAT_DAMAGE on failed catch", () => {
+  it("deals wild damage on failed catch", () => {
     const state = createBattle(mockPlayer, mockWild, mockQuestion);
     const before = state.playerHp;
     const after = attemptCatch(state, 999);
-    expect(after.playerHp).toBe(before - FLAT_DAMAGE);
+    expect(after.playerHp).toBe(before - getWildStats(mockWild.level).damage);
     expect(after.mode).toBe("menu");
   });
 
-  it("sets status to caught on correct answer", () => {
+  it("sets status to caught and awards level-scaled XP on correct answer", () => {
     const state = createBattle(mockPlayer, mockWild, mockQuestion);
     const after = attemptCatch(state, 56);
     expect(after.status).toBe("caught");
+    expect(after.xpGained).toBe(XP_WIN_PER_LEVEL * mockWild.level);
   });
 });
 
 describe("applyFreeDamage", () => {
-  it("reduces player HP by FLAT_DAMAGE", () => {
+  it("reduces player HP by wild damage", () => {
     const state = createBattle(mockPlayer, mockWild, mockQuestion);
     const before = state.playerHp;
     const after = applyFreeDamage(state);
-    expect(after.playerHp).toBe(before - FLAT_DAMAGE);
+    expect(after.playerHp).toBe(before - getWildStats(mockWild.level).damage);
     expect(after.mode).toBe("menu");
   });
 
