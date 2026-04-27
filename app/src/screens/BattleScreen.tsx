@@ -8,6 +8,7 @@ import {
   randomWildPokemonId,
   type PokemonBasicInfo,
 } from "../lib/pokeapi";
+import { pickWildLevel } from "../lib/battle-engine";
 import { NamePlate } from "../components/NamePlate";
 import { PokemonSprite } from "../components/PokemonSprite";
 import { ActionMenu } from "../components/ActionMenu";
@@ -39,6 +40,7 @@ export function BattleScreen({
 
   useEffect(() => {
     const wildId = randomWildPokemonId();
+    const wildLevel = pickWildLevel(playerPokemon.level);
     void getPokemon(wildId).then((info) => {
       setWildInfo(info);
       setWildPokemon({
@@ -47,10 +49,11 @@ export function BattleScreen({
         spriteUrl: info.spriteFront,
         cryUrl: info.cryUrl,
         types: info.types,
+        level: wildLevel,
       });
       playCry(info.cryUrl);
     });
-  }, [playCry]);
+  }, [playCry, playerPokemon.level]);
 
   if (!wildPokemon || !wildInfo) {
     return (
@@ -224,7 +227,7 @@ function BattleActive({
         <div className={styles.enemyPlatePos}>
           <NamePlate
             name={wildPokemon.name}
-            level={0}
+            level={wildPokemon.level}
             currentHp={battle.wildHp}
             maxHp={battle.wildMaxHp}
             side="enemy"
