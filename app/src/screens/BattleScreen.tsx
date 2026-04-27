@@ -121,25 +121,17 @@ function BattleActive({
 
   const finishBattle = useCallback(
     (outcome: "won" | "lost" | "caught") => {
-      const xpGained = battle.xpGained;
-      const currentXp = playerPokemon.xp + xpGained;
-      const needed = xpToNextLevel(playerPokemon.level);
-      const leveledUp = currentXp >= needed;
-      const newLevel = leveledUp
-        ? playerPokemon.level + 1
-        : playerPokemon.level;
-
       void onEnd({
         outcome,
-        xpGained,
-        leveledUp,
-        newLevel,
+        xpGained: battle.xpGained,
+        leveledUp: false,
+        newLevel: playerPokemon.level,
         evolved: false,
         evolvedTo: null,
         caughtPokemon: outcome === "caught" ? wildPokemon : null,
       });
     },
-    [battle.xpGained, onEnd, playerPokemon, wildPokemon],
+    [battle.xpGained, onEnd, playerPokemon.level, wildPokemon],
   );
 
   // Check for battle end from run or lost-during-catch/switch
