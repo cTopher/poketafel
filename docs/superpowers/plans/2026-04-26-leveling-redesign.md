@@ -12,17 +12,17 @@
 
 ## File Structure
 
-| File | Role | Change type |
-|------|------|-------------|
-| `shared/types.ts` | XP constants, `xpToNextLevel`, new `applyXp` helper, `WildPokemon.level` | Modify |
-| `app/src/lib/battle-engine.ts` | Battle math; new `getWildStats`, `pickWildLevel`; uses wild's per-level damage and level-scaled XP | Modify |
-| `app/src/lib/__tests__/battle-engine.test.ts` | Existing tests; add cases for wild level, level-scaled XP | Modify |
-| `app/src/screens/BattleScreen.tsx` | Constructs `WildPokemon`; pick wild level, display on nameplate | Modify |
-| `app/src/hooks/useBattle.ts` | `handleCatch` passes wild level to `catchPokemon` | Modify |
-| `app/src/lib/api-client.ts` | `catchPokemon` request type gains optional `level` | Modify |
-| `app/src/App.tsx` | `handleBattleEnd` uses cascade + final-level evolution; starter onSelect passes `level: 5` | Modify |
-| `functions/api/pokemon.ts` | POST accepts optional `level`; inserts when present | Modify |
-| `functions/api/save.ts` | Server-side cascade migrates over-cap XP per Pokémon | Modify |
+| File                                          | Role                                                                                               | Change type |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------- | ----------- |
+| `shared/types.ts`                             | XP constants, `xpToNextLevel`, new `applyXp` helper, `WildPokemon.level`                           | Modify      |
+| `app/src/lib/battle-engine.ts`                | Battle math; new `getWildStats`, `pickWildLevel`; uses wild's per-level damage and level-scaled XP | Modify      |
+| `app/src/lib/__tests__/battle-engine.test.ts` | Existing tests; add cases for wild level, level-scaled XP                                          | Modify      |
+| `app/src/screens/BattleScreen.tsx`            | Constructs `WildPokemon`; pick wild level, display on nameplate                                    | Modify      |
+| `app/src/hooks/useBattle.ts`                  | `handleCatch` passes wild level to `catchPokemon`                                                  | Modify      |
+| `app/src/lib/api-client.ts`                   | `catchPokemon` request type gains optional `level`                                                 | Modify      |
+| `app/src/App.tsx`                             | `handleBattleEnd` uses cascade + final-level evolution; starter onSelect passes `level: 5`         | Modify      |
+| `functions/api/pokemon.ts`                    | POST accepts optional `level`; inserts when present                                                | Modify      |
+| `functions/api/save.ts`                       | Server-side cascade migrates over-cap XP per Pokémon                                               | Modify      |
 
 ---
 
@@ -352,35 +352,35 @@ export function createBattle(
 Replace the wrong-answer branch in `submitAnswer` to use the wild's damage:
 
 ```typescript
-  if (correct) {
-    wildHp = Math.max(0, wildHp - playerStats.damage);
-    xpGained += XP_PER_CORRECT;
+if (correct) {
+  wildHp = Math.max(0, wildHp - playerStats.damage);
+  xpGained += XP_PER_CORRECT;
 
-    retryQueue = retryQueue.filter(
-      (q) =>
-        !(
-          q.factorA === currentQuestion.factorA &&
-          q.factorB === currentQuestion.factorB
-        ),
-    );
-  } else {
-    const wildStats = getWildStats(state.wildPokemon.level);
-    playerHp = Math.max(0, playerHp - wildStats.damage);
-    const alreadyQueued = retryQueue.some(
-      (q) =>
+  retryQueue = retryQueue.filter(
+    (q) =>
+      !(
         q.factorA === currentQuestion.factorA &&
-        q.factorB === currentQuestion.factorB,
-    );
-    if (!alreadyQueued) {
-      retryQueue = [...retryQueue, currentQuestion];
-    }
+        q.factorB === currentQuestion.factorB
+      ),
+  );
+} else {
+  const wildStats = getWildStats(state.wildPokemon.level);
+  playerHp = Math.max(0, playerHp - wildStats.damage);
+  const alreadyQueued = retryQueue.some(
+    (q) =>
+      q.factorA === currentQuestion.factorA &&
+      q.factorB === currentQuestion.factorB,
+  );
+  if (!alreadyQueued) {
+    retryQueue = [...retryQueue, currentQuestion];
   }
+}
 ```
 
 Also rename the `stats` local at the top of `submitAnswer` to `playerStats` for clarity:
 
 ```typescript
-  const playerStats = getPlayerStats(playerPokemon.level);
+const playerStats = getPlayerStats(playerPokemon.level);
 ```
 
 And replace the existing `stats.damage` reference inside the correct-answer branch with `playerStats.damage` (already shown above).
@@ -390,25 +390,25 @@ And replace the existing `stats.damage` reference inside the correct-answer bran
 Replace the failed-catch tail of `attemptCatch` with:
 
 ```typescript
-  // Catch failed — enemy free attack, return to menu
-  const wildStats = getWildStats(state.wildPokemon.level);
-  const newPlayerHp = Math.max(0, state.playerHp - wildStats.damage);
-  const newStatus = newPlayerHp <= 0 ? ("lost" as const) : state.status;
+// Catch failed — enemy free attack, return to menu
+const wildStats = getWildStats(state.wildPokemon.level);
+const newPlayerHp = Math.max(0, state.playerHp - wildStats.damage);
+const newStatus = newPlayerHp <= 0 ? ("lost" as const) : state.status;
 
-  return {
-    ...state,
-    playerHp: newPlayerHp,
-    status: newStatus,
-    xpGained: newStatus === "lost" ? 0 : state.xpGained,
-    catchMode: false,
-    mode: "menu",
-    turnResult: {
-      correct: false,
-      correctAnswer,
-      givenAnswer,
-      question: currentQuestion,
-    },
-  };
+return {
+  ...state,
+  playerHp: newPlayerHp,
+  status: newStatus,
+  xpGained: newStatus === "lost" ? 0 : state.xpGained,
+  catchMode: false,
+  mode: "menu",
+  turnResult: {
+    correct: false,
+    correctAnswer,
+    givenAnswer,
+    question: currentQuestion,
+  },
+};
 ```
 
 - [ ] **Step 4: Update `applyFreeDamage` to use wild damage**
@@ -456,14 +456,14 @@ git commit -m "refactor(battle-engine): wild damage derives from wild level"
 Replace the end-condition block in `submitAnswer` with:
 
 ```typescript
-  // Check end conditions
-  if (wildHp <= 0) {
-    status = "won";
-    xpGained += XP_WIN_PER_LEVEL * state.wildPokemon.level;
-  } else if (playerHp <= 0) {
-    status = "lost";
-    xpGained = 0; // No XP on defeat
-  }
+// Check end conditions
+if (wildHp <= 0) {
+  status = "won";
+  xpGained += XP_WIN_PER_LEVEL * state.wildPokemon.level;
+} else if (playerHp <= 0) {
+  status = "lost";
+  xpGained = 0; // No XP on defeat
+}
 ```
 
 - [ ] **Step 2: Update catch-bonus XP in `attemptCatch`**
@@ -471,22 +471,21 @@ Replace the end-condition block in `submitAnswer` with:
 Replace the success branch in `attemptCatch` with:
 
 ```typescript
-  if (correct) {
-    return {
-      ...state,
-      status: "caught",
-      xpGained:
-        state.xpGained + XP_WIN_PER_LEVEL * state.wildPokemon.level,
-      turnResult: {
-        correct: true,
-        correctAnswer,
-        givenAnswer,
-        question: currentQuestion,
-      },
-      catchMode: false,
-      mode: "menu",
-    };
-  }
+if (correct) {
+  return {
+    ...state,
+    status: "caught",
+    xpGained: state.xpGained + XP_WIN_PER_LEVEL * state.wildPokemon.level,
+    turnResult: {
+      correct: true,
+      correctAnswer,
+      givenAnswer,
+      question: currentQuestion,
+    },
+    catchMode: false,
+    mode: "menu",
+  };
+}
 ```
 
 - [ ] **Step 3: Run tests (existing tests still fail — fixed in Task 6)**
@@ -758,22 +757,22 @@ import { pickWildLevel } from "../lib/battle-engine";
 Replace the `useEffect` that loads the wild Pokémon (around lines 40-53) with:
 
 ```typescript
-  useEffect(() => {
-    const wildId = randomWildPokemonId();
-    const wildLevel = pickWildLevel(playerPokemon.level);
-    void getPokemon(wildId).then((info) => {
-      setWildInfo(info);
-      setWildPokemon({
-        pokeapiId: info.id,
-        name: info.name,
-        spriteUrl: info.spriteFront,
-        cryUrl: info.cryUrl,
-        types: info.types,
-        level: wildLevel,
-      });
-      playCry(info.cryUrl);
+useEffect(() => {
+  const wildId = randomWildPokemonId();
+  const wildLevel = pickWildLevel(playerPokemon.level);
+  void getPokemon(wildId).then((info) => {
+    setWildInfo(info);
+    setWildPokemon({
+      pokeapiId: info.id,
+      name: info.name,
+      spriteUrl: info.spriteFront,
+      cryUrl: info.cryUrl,
+      types: info.types,
+      level: wildLevel,
     });
-  }, [playCry, playerPokemon.level]);
+    playCry(info.cryUrl);
+  });
+}, [playCry, playerPokemon.level]);
 ```
 
 - [ ] **Step 2: Show wild's level on the enemy nameplate**
@@ -781,15 +780,15 @@ Replace the `useEffect` that loads the wild Pokémon (around lines 40-53) with:
 Find the enemy `NamePlate` (around line 224-232) and replace `level={0}` with `level={wildPokemon.level}`:
 
 ```tsx
-        <div className={styles.enemyPlatePos}>
-          <NamePlate
-            name={wildPokemon.name}
-            level={wildPokemon.level}
-            currentHp={battle.wildHp}
-            maxHp={battle.wildMaxHp}
-            side="enemy"
-          />
-        </div>
+<div className={styles.enemyPlatePos}>
+  <NamePlate
+    name={wildPokemon.name}
+    level={wildPokemon.level}
+    currentHp={battle.wildHp}
+    maxHp={battle.wildMaxHp}
+    side="enemy"
+  />
+</div>
 ```
 
 - [ ] **Step 3: Run typecheck**
@@ -824,22 +823,22 @@ git commit -m "feat(battle): pick wild level via ±2 range and show on nameplate
 In `app/src/hooks/useBattle.ts`, replace the `handleCatch` body with:
 
 ```typescript
-  const handleCatch = useCallback(
-    async (givenAnswer: number) => {
-      const newState = attemptCatch(battle, givenAnswer);
-      setBattle(newState);
+const handleCatch = useCallback(
+  async (givenAnswer: number) => {
+    const newState = attemptCatch(battle, givenAnswer);
+    setBattle(newState);
 
-      if (newState.status === "caught") {
-        await api.catchPokemon({
-          pokeapi_id: wildPokemon.pokeapiId,
-          level: wildPokemon.level,
-        });
-      }
+    if (newState.status === "caught") {
+      await api.catchPokemon({
+        pokeapi_id: wildPokemon.pokeapiId,
+        level: wildPokemon.level,
+      });
+    }
 
-      return newState;
-    },
-    [battle, wildPokemon],
-  );
+    return newState;
+  },
+  [battle, wildPokemon],
+);
 ```
 
 - [ ] **Step 2: Run app tests**
@@ -949,23 +948,25 @@ git commit -m "feat(api): accept optional level when creating a Pokémon"
 In `app/src/App.tsx`, locate the `StarterSelectScreen` block (around line 105) and replace the `onSelect` body:
 
 ```tsx
-      {screen === "starter-select" && (
-        <StarterSelectScreen
-          onSelect={async (pokeapiId) => {
-            const caught = await api.catchPokemon({
-              pokeapi_id: pokeapiId,
-              level: 5,
-            });
-            await api.updatePokemon({
-              pokemon_id: caught.id,
-              set_active: true,
-            });
-            const collection = await api.getCollection();
-            auth.updateCollection(collection);
-            setScreen("hub");
-          }}
-        />
-      )}
+{
+  screen === "starter-select" && (
+    <StarterSelectScreen
+      onSelect={async (pokeapiId) => {
+        const caught = await api.catchPokemon({
+          pokeapi_id: pokeapiId,
+          level: 5,
+        });
+        await api.updatePokemon({
+          pokemon_id: caught.id,
+          set_active: true,
+        });
+        const collection = await api.getCollection();
+        auth.updateCollection(collection);
+        setScreen("hub");
+      }}
+    />
+  );
+}
 ```
 
 - [ ] **Step 2: Run typecheck**
@@ -1003,67 +1004,64 @@ import type { Screen, BattleResult } from "@shared/types";
 Then replace `handleBattleEnd`:
 
 ```typescript
-  async function handleBattleEnd(result: BattleResult) {
-    if (activePokemon && result.outcome !== "lost") {
-      const { newLevel, newXp, leveledUp } = applyXp(
-        activePokemon.level,
-        activePokemon.xp,
-        result.xpGained,
-      );
+async function handleBattleEnd(result: BattleResult) {
+  if (activePokemon && result.outcome !== "lost") {
+    const { newLevel, newXp, leveledUp } = applyXp(
+      activePokemon.level,
+      activePokemon.xp,
+      result.xpGained,
+    );
 
-      await api.updatePokemon({
-        pokemon_id: activePokemon.id,
-        xp: newXp,
-        level: leveledUp ? newLevel : undefined,
-      });
+    await api.updatePokemon({
+      pokemon_id: activePokemon.id,
+      xp: newXp,
+      level: leveledUp ? newLevel : undefined,
+    });
 
-      if (leveledUp) {
-        result = { ...result, leveledUp: true, newLevel };
-        const evoCheck = await checkEvolution(
-          activePokemon.pokeapi_id,
-          newLevel,
-        );
-        if (evoCheck.shouldEvolve && evoCheck.evolvesToId) {
-          result = {
-            ...result,
-            evolved: true,
-            evolvedTo: evoCheck.evolvesToId,
-          };
-        }
+    if (leveledUp) {
+      result = { ...result, leveledUp: true, newLevel };
+      const evoCheck = await checkEvolution(activePokemon.pokeapi_id, newLevel);
+      if (evoCheck.shouldEvolve && evoCheck.evolvesToId) {
+        result = {
+          ...result,
+          evolved: true,
+          evolvedTo: evoCheck.evolvesToId,
+        };
       }
     }
-
-    if (result.caughtPokemon) {
-      const info = await getPokemon(result.caughtPokemon.pokeapiId);
-      setCaughtPokemonInfo(info);
-    }
-
-    setBattleResult(result);
-
-    const collection = await api.getCollection();
-    auth.updateCollection(collection);
-
-    setScreen("battle-result");
   }
+
+  if (result.caughtPokemon) {
+    const info = await getPokemon(result.caughtPokemon.pokeapiId);
+    setCaughtPokemonInfo(info);
+  }
+
+  setBattleResult(result);
+
+  const collection = await api.getCollection();
+  auth.updateCollection(collection);
+
+  setScreen("battle-result");
+}
 ```
 
 Also update the `BattleScreen` `finishBattle` (in `app/src/screens/BattleScreen.tsx`) — the local one currently computes `leveledUp` and `newLevel` itself but `handleBattleEnd` recomputes properly using cascade. Replace that block (around lines 119-140):
 
 ```typescript
-  const finishBattle = useCallback(
-    (outcome: "won" | "lost" | "caught") => {
-      void onEnd({
-        outcome,
-        xpGained: battle.xpGained,
-        leveledUp: false,
-        newLevel: playerPokemon.level,
-        evolved: false,
-        evolvedTo: null,
-        caughtPokemon: outcome === "caught" ? wildPokemon : null,
-      });
-    },
-    [battle.xpGained, onEnd, playerPokemon.level, wildPokemon],
-  );
+const finishBattle = useCallback(
+  (outcome: "won" | "lost" | "caught") => {
+    void onEnd({
+      outcome,
+      xpGained: battle.xpGained,
+      leveledUp: false,
+      newLevel: playerPokemon.level,
+      evolved: false,
+      evolvedTo: null,
+      caughtPokemon: outcome === "caught" ? wildPokemon : null,
+    });
+  },
+  [battle.xpGained, onEnd, playerPokemon.level, wildPokemon],
+);
 ```
 
 This pushes the level-up math into `App.handleBattleEnd` (one place, cascading) instead of computing a single-level guess in `BattleScreen`. Also remove the `xpToNextLevel` import from `BattleScreen.tsx` if it's now unused — but it's still used for the XP bar `xpToNext={xpToNextLevel(playerPokemon.level)}` (line 251), so keep it.

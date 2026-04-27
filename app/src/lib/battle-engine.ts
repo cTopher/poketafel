@@ -144,8 +144,7 @@ export function attemptCatch(
     return {
       ...state,
       status: "caught",
-      xpGained:
-        state.xpGained + XP_WIN_PER_LEVEL * state.wildPokemon.level,
+      xpGained: state.xpGained + XP_WIN_PER_LEVEL * state.wildPokemon.level,
       turnResult: {
         correct: true,
         correctAnswer,
