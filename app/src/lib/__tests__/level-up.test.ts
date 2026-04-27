@@ -32,7 +32,8 @@ describe("applyXp", () => {
 
   it("cascades multiple level-ups in one call", () => {
     const result = applyXp(1, 0, 200);
-    expect(result.newLevel).toBeGreaterThan(2);
+    expect(result.newLevel).toBe(4);
+    expect(result.newXp).toBe(0);
     expect(result.leveledUp).toBe(true);
   });
 
@@ -45,8 +46,8 @@ describe("applyXp", () => {
 
   it("migrates over-cap XP without gain (cascade-only)", () => {
     const result = applyXp(1, 1000, 0);
-    expect(result.newLevel).toBeGreaterThan(1);
-    expect(result.newXp).toBeLessThan(xpToNextLevel(result.newLevel));
+    expect(result.newLevel).toBe(6);
+    expect(result.newXp).toBe(350);
     expect(result.leveledUp).toBe(true);
   });
 });
