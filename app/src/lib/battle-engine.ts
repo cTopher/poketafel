@@ -106,7 +106,7 @@ export function submitAnswer(
   // Check end conditions
   if (wildHp <= 0) {
     status = "won";
-    xpGained += XP_PER_WIN;
+    xpGained += XP_WIN_PER_LEVEL * state.wildPokemon.level;
   } else if (playerHp <= 0) {
     status = "lost";
     xpGained = 0; // No XP on defeat
@@ -144,7 +144,8 @@ export function attemptCatch(
     return {
       ...state,
       status: "caught",
-      xpGained: state.xpGained + XP_PER_WIN,
+      xpGained:
+        state.xpGained + XP_WIN_PER_LEVEL * state.wildPokemon.level,
       turnResult: {
         correct: true,
         correctAnswer,
