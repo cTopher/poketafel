@@ -71,6 +71,7 @@ export interface GameState {
 export interface CatchRequest {
   pokeapi_id: number;
   nickname?: string;
+  level?: number;
 }
 
 export interface SetActiveRequest {
