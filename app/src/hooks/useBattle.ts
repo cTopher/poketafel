@@ -128,7 +128,10 @@ export function useBattle({
       setBattle(newState);
 
       if (newState.status === "caught") {
-        await api.catchPokemon({ pokeapi_id: wildPokemon.pokeapiId });
+        await api.catchPokemon({
+          pokeapi_id: wildPokemon.pokeapiId,
+          level: wildPokemon.level,
+        });
       }
 
       return newState;
