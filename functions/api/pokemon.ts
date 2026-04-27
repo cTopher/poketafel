@@ -25,9 +25,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const body = (await context.request.json()) as CatchRequest;
   const sql = getDb(context.env);
 
+  const level = body.level ?? 1;
+
   const result = await sql`
-    INSERT INTO pokemon_collection (trainer_id, pokeapi_id, nickname)
-    VALUES (${trainerId}, ${body.pokeapi_id}, ${body.nickname ?? null})
+    INSERT INTO pokemon_collection (trainer_id, pokeapi_id, nickname, level)
+    VALUES (${trainerId}, ${body.pokeapi_id}, ${body.nickname ?? null}, ${level})
     RETURNING id, trainer_id, pokeapi_id, nickname, level, xp, is_active, caught_at
   `;
 

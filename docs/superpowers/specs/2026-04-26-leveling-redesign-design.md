@@ -5,7 +5,7 @@
 
 ## Problem
 
-The current leveling curve makes mid-game progress feel slow, starting levels are too low compared to canonical Pokémon games, and wild Pokémon don't have their own level — their HP scales off the *player's* level, which removes the "stronger foe" feel. We want progression that mirrors how an actual Pokémon game would handle leveling, scaled to fit a kids' multiplication-tables game.
+The current leveling curve makes mid-game progress feel slow, starting levels are too low compared to canonical Pokémon games, and wild Pokémon don't have their own level — their HP scales off the _player's_ level, which removes the "stronger foe" feel. We want progression that mirrors how an actual Pokémon game would handle leveling, scaled to fit a kids' multiplication-tables game.
 
 ## Goals
 
@@ -28,13 +28,13 @@ The current leveling curve makes mid-game progress feel slow, starting levels ar
 xpToNextLevel(level) = 20 + 10 × level²
 ```
 
-| Level | XP to next |
-|-------|-----------:|
-| 1 → 2 | 30 |
-| 2 → 3 | 60 |
-| 5 → 6 | 270 |
-| 10 → 11 | 1020 |
-| 20 → 21 | 4020 |
+| Level   | XP to next |
+| ------- | ---------: |
+| 1 → 2   |         30 |
+| 2 → 3   |         60 |
+| 5 → 6   |        270 |
+| 10 → 11 |       1020 |
+| 20 → 21 |       4020 |
 
 Quadratic shape: early levels fly, later ones earn a sense of progress, no runaway cubic explosion.
 
@@ -51,11 +51,11 @@ XP_WIN_PER_LEVEL    = 12            // multiplied by wild's level on win/catch
 
 **Tuning check** (assuming ~5–6 correct answers per win):
 
-| Player Lv | Wild Lv | XP/win | xpToNext | Wins to next |
-|----------:|--------:|-------:|---------:|-------------:|
-| 5 | 5 | 5×5 + 60 = 85 | 270 | ~3 |
-| 10 | 10 | 6×5 + 120 = 150 | 1020 | ~7 |
-| 20 | 20 | 7×5 + 240 = 275 | 4020 | ~15 |
+| Player Lv | Wild Lv |          XP/win | xpToNext | Wins to next |
+| --------: | ------: | --------------: | -------: | -----------: |
+|         5 |       5 |   5×5 + 60 = 85 |      270 |           ~3 |
+|        10 |      10 | 6×5 + 120 = 150 |     1020 |           ~7 |
+|        20 |      20 | 7×5 + 240 = 275 |     4020 |          ~15 |
 
 Cumulative: Lv5→10 ≈ 15 wins, Lv5→20 ≈ 50 wins ✓.
 
@@ -65,7 +65,7 @@ Wild Pokémon now have their own level, picked uniformly in a ±2 range around t
 
 ```ts
 function pickWildLevel(playerLevel: number): number {
-  const offset = randomInt(-2, 2);  // inclusive
+  const offset = randomInt(-2, 2); // inclusive
   return Math.max(1, playerLevel + offset);
 }
 ```
@@ -98,7 +98,7 @@ A single battle can now produce multiple level-ups (especially after migration).
 ```ts
 function applyXp(level: number, xp: number, gained: number) {
   let newLevel = level;
-  let newXp    = xp + gained;
+  let newXp = xp + gained;
   while (newXp >= xpToNextLevel(newLevel)) {
     newXp -= xpToNextLevel(newLevel);
     newLevel++;
@@ -107,7 +107,7 @@ function applyXp(level: number, xp: number, gained: number) {
 }
 ```
 
-- After the cascade, `checkEvolution` runs once with the *final* `newLevel` — handles Pokémon that skip past their evolution threshold in a single battle.
+- After the cascade, `checkEvolution` runs once with the _final_ `newLevel` — handles Pokémon that skip past their evolution threshold in a single battle.
 - Result screen shows the highest level reached.
 
 ### Migration: auto-level-up on next save
@@ -121,22 +121,22 @@ No SQL migration. The same cascade runs server-side on `GET /api/save`:
 
 **First load post-deploy:** existing players' over-cap XP cashes in to levels automatically — no battle required, no manual SQL.
 
-**Evolution after auto-level:** the server cascade does *not* trigger evolutions (evolution requires PokéAPI fetches and is client-side). Pending evolutions trigger on the next post-migration battle via the standard cascade-then-`checkEvolution` flow. Acceptable because evolution is a celebratory animation that fits naturally at battle end.
+**Evolution after auto-level:** the server cascade does _not_ trigger evolutions (evolution requires PokéAPI fetches and is client-side). Pending evolutions trigger on the next post-migration battle via the standard cascade-then-`checkEvolution` flow. Acceptable because evolution is a celebratory animation that fits naturally at battle end.
 
 ## Files affected
 
-| File | Change |
-|------|--------|
-| `shared/types.ts` | New `XP_WIN_PER_LEVEL`; updated `XP_PER_CORRECT`; new `xpToNextLevel`; remove `FLAT_DAMAGE`, `WILD_HP_BASE`, `WILD_HP_PER_PLAYER_LEVEL`, `XP_PER_WIN`. Add `level: number` to `WildPokemon`. |
-| `app/src/lib/battle-engine.ts` | New `getWildStats(level)`, new `pickWildLevel(playerLevel)`. `createBattle` uses wild stats from wild level. `submitAnswer` / `attemptCatch` / `applyFreeDamage` use wild damage instead of `FLAT_DAMAGE`. Win/catch XP bonus scales with `wild.level`. |
-| `app/src/lib/__tests__/battle-engine.test.ts` | Update existing tests to construct wilds with explicit levels; add tests for wild stats by level, XP scaling, win bonus by level. |
-| `app/src/screens/BattleScreen.tsx` (or wherever the wild is constructed) | Call `pickWildLevel(activePokemon.level)` and attach `level` to the `WildPokemon`. |
-| `app/src/hooks/useBattle.ts` | `handleCatch` passes `level: wildPokemon.level` to `api.catchPokemon`. |
-| `app/src/screens/StarterSelectScreen.tsx` (via `App.tsx` `onSelect`) | Passes `level: 5` to `api.catchPokemon`. |
-| `app/src/lib/api-client.ts` | `catchPokemon` request type gains optional `level`. |
-| `app/src/App.tsx` | `handleBattleEnd` uses cascade `applyXp`; runs `checkEvolution` with final level. |
-| `functions/api/pokemon.ts` | Catch handler accepts optional `level` in body; inserts it (default 1 if omitted). |
-| `functions/api/save.ts` | Server-side migration cascade per Pokémon; writes back updated `level`/`xp`. |
+| File                                                                     | Change                                                                                                                                                                                                                                                  |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `shared/types.ts`                                                        | New `XP_WIN_PER_LEVEL`; updated `XP_PER_CORRECT`; new `xpToNextLevel`; remove `FLAT_DAMAGE`, `WILD_HP_BASE`, `WILD_HP_PER_PLAYER_LEVEL`, `XP_PER_WIN`. Add `level: number` to `WildPokemon`.                                                            |
+| `app/src/lib/battle-engine.ts`                                           | New `getWildStats(level)`, new `pickWildLevel(playerLevel)`. `createBattle` uses wild stats from wild level. `submitAnswer` / `attemptCatch` / `applyFreeDamage` use wild damage instead of `FLAT_DAMAGE`. Win/catch XP bonus scales with `wild.level`. |
+| `app/src/lib/__tests__/battle-engine.test.ts`                            | Update existing tests to construct wilds with explicit levels; add tests for wild stats by level, XP scaling, win bonus by level.                                                                                                                       |
+| `app/src/screens/BattleScreen.tsx` (or wherever the wild is constructed) | Call `pickWildLevel(activePokemon.level)` and attach `level` to the `WildPokemon`.                                                                                                                                                                      |
+| `app/src/hooks/useBattle.ts`                                             | `handleCatch` passes `level: wildPokemon.level` to `api.catchPokemon`.                                                                                                                                                                                  |
+| `app/src/screens/StarterSelectScreen.tsx` (via `App.tsx` `onSelect`)     | Passes `level: 5` to `api.catchPokemon`.                                                                                                                                                                                                                |
+| `app/src/lib/api-client.ts`                                              | `catchPokemon` request type gains optional `level`.                                                                                                                                                                                                     |
+| `app/src/App.tsx`                                                        | `handleBattleEnd` uses cascade `applyXp`; runs `checkEvolution` with final level.                                                                                                                                                                       |
+| `functions/api/pokemon.ts`                                               | Catch handler accepts optional `level` in body; inserts it (default 1 if omitted).                                                                                                                                                                      |
+| `functions/api/save.ts`                                                  | Server-side migration cascade per Pokémon; writes back updated `level`/`xp`.                                                                                                                                                                            |
 
 ## Risks & open edges
 

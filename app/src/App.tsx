@@ -9,7 +9,7 @@ import { BattleResultScreen } from "./screens/BattleResultScreen";
 import { CollectionScreen } from "./screens/CollectionScreen";
 import { api } from "./lib/api-client";
 import { getPokemon, type PokemonBasicInfo } from "./lib/pokeapi";
-import { xpToNextLevel } from "@shared/types";
+import { applyXp } from "@shared/types";
 import type { Screen, BattleResult } from "@shared/types";
 import { checkEvolution } from "./lib/evolution";
 import styles from "./App.module.css";
@@ -57,20 +57,20 @@ export function App() {
 
   async function handleBattleEnd(result: BattleResult) {
     if (activePokemon && result.outcome !== "lost") {
-      const newXp = activePokemon.xp + result.xpGained;
-      const needed = xpToNextLevel(activePokemon.level);
-      const leveledUp = newXp >= needed;
-      const newLevel = leveledUp
-        ? activePokemon.level + 1
-        : activePokemon.level;
+      const { newLevel, newXp, leveledUp } = applyXp(
+        activePokemon.level,
+        activePokemon.xp,
+        result.xpGained,
+      );
 
       await api.updatePokemon({
         pokemon_id: activePokemon.id,
-        xp: leveledUp ? newXp - needed : newXp,
+        xp: newXp,
         level: leveledUp ? newLevel : undefined,
       });
 
       if (leveledUp) {
+        result = { ...result, leveledUp: true, newLevel };
         const evoCheck = await checkEvolution(
           activePokemon.pokeapi_id,
           newLevel,
@@ -78,8 +78,6 @@ export function App() {
         if (evoCheck.shouldEvolve && evoCheck.evolvesToId) {
           result = {
             ...result,
-            leveledUp: true,
-            newLevel,
             evolved: true,
             evolvedTo: evoCheck.evolvesToId,
           };
@@ -105,7 +103,10 @@ export function App() {
       {screen === "starter-select" && (
         <StarterSelectScreen
           onSelect={async (pokeapiId) => {
-            const caught = await api.catchPokemon({ pokeapi_id: pokeapiId });
+            const caught = await api.catchPokemon({
+              pokeapi_id: pokeapiId,
+              level: 5,
+            });
             await api.updatePokemon({
               pokemon_id: caught.id,
               set_active: true,

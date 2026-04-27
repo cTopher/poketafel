@@ -6,26 +6,32 @@ import type {
   TurnResult,
 } from "@shared/types";
 import {
-  FLAT_DAMAGE,
   PLAYER_BASE_HP,
   HP_PER_LEVEL,
+  DAMAGE_BASE,
   DAMAGE_PER_LEVEL,
-  WILD_HP_BASE,
-  WILD_HP_PER_PLAYER_LEVEL,
   CATCH_HP_THRESHOLD,
   XP_PER_CORRECT,
-  XP_PER_WIN,
+  XP_WIN_PER_LEVEL,
 } from "@shared/types";
 
 export function getPlayerStats(level: number) {
   return {
     maxHp: PLAYER_BASE_HP + HP_PER_LEVEL * (level - 1),
-    damage: FLAT_DAMAGE + DAMAGE_PER_LEVEL * (level - 1),
+    damage: DAMAGE_BASE + DAMAGE_PER_LEVEL * (level - 1),
   };
 }
 
-function getWildMaxHp(playerLevel: number): number {
-  return WILD_HP_BASE + WILD_HP_PER_PLAYER_LEVEL * (playerLevel - 1);
+export function getWildStats(level: number) {
+  return {
+    maxHp: PLAYER_BASE_HP + HP_PER_LEVEL * (level - 1),
+    damage: DAMAGE_BASE + DAMAGE_PER_LEVEL * (level - 1),
+  };
+}
+
+export function pickWildLevel(playerLevel: number): number {
+  const offset = Math.floor(Math.random() * 5) - 2; // -2..2 inclusive
+  return Math.max(1, playerLevel + offset);
 }
 
 export function createBattle(
@@ -33,16 +39,16 @@ export function createBattle(
   wildPokemon: WildPokemon,
   firstQuestion: Question,
 ): BattleState {
-  const stats = getPlayerStats(playerPokemon.level);
-  const wildMaxHp = getWildMaxHp(playerPokemon.level);
+  const playerStats = getPlayerStats(playerPokemon.level);
+  const wildStats = getWildStats(wildPokemon.level);
 
   return {
     wildPokemon,
     playerPokemon,
-    wildHp: wildMaxHp,
-    wildMaxHp,
-    playerHp: stats.maxHp,
-    playerMaxHp: stats.maxHp,
+    wildHp: wildStats.maxHp,
+    wildMaxHp: wildStats.maxHp,
+    playerHp: playerStats.maxHp,
+    playerMaxHp: playerStats.maxHp,
     currentQuestion: firstQuestion,
     retryQueue: [],
     turnResult: null,
@@ -62,7 +68,7 @@ export function submitAnswer(
   const { currentQuestion, playerPokemon } = state;
   const correctAnswer = currentQuestion.factorA * currentQuestion.factorB;
   const correct = givenAnswer === correctAnswer;
-  const stats = getPlayerStats(playerPokemon.level);
+  const playerStats = getPlayerStats(playerPokemon.level);
 
   const turnResult: TurnResult = {
     correct,
@@ -74,10 +80,9 @@ export function submitAnswer(
   let { wildHp, playerHp, retryQueue, xpGained, status } = state;
 
   if (correct) {
-    wildHp = Math.max(0, wildHp - stats.damage);
+    wildHp = Math.max(0, wildHp - playerStats.damage);
     xpGained += XP_PER_CORRECT;
 
-    // Remove from retry queue if it was a retry
     retryQueue = retryQueue.filter(
       (q) =>
         !(
@@ -86,8 +91,8 @@ export function submitAnswer(
         ),
     );
   } else {
-    playerHp = Math.max(0, playerHp - FLAT_DAMAGE);
-    // Add to retry queue (if not already there)
+    const wildStats = getWildStats(state.wildPokemon.level);
+    playerHp = Math.max(0, playerHp - wildStats.damage);
     const alreadyQueued = retryQueue.some(
       (q) =>
         q.factorA === currentQuestion.factorA &&
@@ -101,7 +106,7 @@ export function submitAnswer(
   // Check end conditions
   if (wildHp <= 0) {
     status = "won";
-    xpGained += XP_PER_WIN;
+    xpGained += XP_WIN_PER_LEVEL * state.wildPokemon.level;
   } else if (playerHp <= 0) {
     status = "lost";
     xpGained = 0; // No XP on defeat
@@ -139,7 +144,7 @@ export function attemptCatch(
     return {
       ...state,
       status: "caught",
-      xpGained: state.xpGained + XP_PER_WIN,
+      xpGained: state.xpGained + XP_WIN_PER_LEVEL * state.wildPokemon.level,
       turnResult: {
         correct: true,
         correctAnswer,
@@ -152,7 +157,8 @@ export function attemptCatch(
   }
 
   // Catch failed — enemy free attack, return to menu
-  const newPlayerHp = Math.max(0, state.playerHp - FLAT_DAMAGE);
+  const wildStats = getWildStats(state.wildPokemon.level);
+  const newPlayerHp = Math.max(0, state.playerHp - wildStats.damage);
   const newStatus = newPlayerHp <= 0 ? ("lost" as const) : state.status;
 
   return {
@@ -172,7 +178,8 @@ export function attemptCatch(
 }
 
 export function applyFreeDamage(state: BattleState): BattleState {
-  const newPlayerHp = Math.max(0, state.playerHp - FLAT_DAMAGE);
+  const wildStats = getWildStats(state.wildPokemon.level);
+  const newPlayerHp = Math.max(0, state.playerHp - wildStats.damage);
   const newStatus = newPlayerHp <= 0 ? ("lost" as const) : state.status;
   return {
     ...state,

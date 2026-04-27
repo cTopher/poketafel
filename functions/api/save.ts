@@ -1,6 +1,7 @@
 import { getDb, type Env } from "./_db";
 import { getTrainerId, unauthorized, json } from "./_auth";
-import type { GameState } from "../../shared/types";
+import type { GameState, OwnedPokemon } from "../../shared/types";
+import { applyXp } from "../../shared/types";
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const trainerId = getTrainerId(context.request);
@@ -8,7 +9,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const sql = getDb(context.env);
 
-  const [collection, difficulty] = await Promise.all([
+  const [collectionRaw, difficulty] = await Promise.all([
     sql`
       SELECT id, trainer_id, pokeapi_id, nickname, level, xp, is_active, caught_at
       FROM pokemon_collection
@@ -22,8 +23,26 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     `,
   ]);
 
+  const collection = collectionRaw as unknown as OwnedPokemon[];
+
+  // Migrate any over-cap XP into level-ups (cascade). Persist if any row changed.
+  const migrated: OwnedPokemon[] = [];
+  for (const p of collection) {
+    const { newLevel, newXp, leveledUp } = applyXp(p.level, p.xp, 0);
+    if (leveledUp) {
+      await sql`
+        UPDATE pokemon_collection
+        SET level = ${newLevel}, xp = ${newXp}
+        WHERE id = ${p.id} AND trainer_id = ${trainerId}
+      `;
+      migrated.push({ ...p, level: newLevel, xp: newXp });
+    } else {
+      migrated.push(p);
+    }
+  }
+
   const state: GameState = {
-    collection: collection as unknown as GameState["collection"],
+    collection: migrated,
     difficulty: difficulty as unknown as GameState["difficulty"],
   };
 
